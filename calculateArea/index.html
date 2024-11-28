@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>無懼挑戰：精準換算公分與坪數！</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <div class="link-area">
+            <a href="../index.html" class="home-link"><i class="fas fa-home"></i></a>
+        </div>
+        <div class="chat-box" id="chatBody">
+            <div class="message sent"><i class="fa-solid fa-calculator"></i> 公分換算坪數怎麼計算？</div>
+            <div class="message received">坪是一種常用的面積單位<br>
+            1 坪等於 3.305785 平方公尺</div>
+            <div class="message received">範例：<br>
+                輸入：300*400<br>
+                面積（平方公分）= 300 × 400 = 120000<br>
+                面積（坪數）= 120000 ÷ 10000（平方公尺） ÷ 3.305785 ≈ 3.63<br>
+                面積: 120000.00 平方公分 ≈ 3.63 坪</div>
+            <div class="message sent">300*400</div>
+            <div class="message received">
+                長：300 公分<br>
+                寬：400 公分<br>
+                計算結果：3.6300 坪</div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="輸入消息..." class="input-message">
+            <button onclick="sendMessage()" class="send-button">send</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+body {
+    background-color: #282F3C;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    width: 400px;
+    margin: 50px auto;
+}
+
+a{
+    text-decoration:none;
+    color: #FFFFFF;
+}
+
+.link-area {
+    margin-bottom: 10px;
+}
+
+.home-link {
+    color: #FFFFFF;
+}
+
+.chat-box {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    height: 600px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column; /* 垂直排列消息 */
+}
+
+.message {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 20px;
+    max-width: 75%; /* 設置最大寬度 */
+}
+
+.sent {
+    background-color: #007BFF;
+    color: white;
+    align-self: flex-end; /* 發送的消息靠右 */
+    border-bottom-right-radius: 0;
+}
+
+.received {
+    background-color: #4CAF50;
+    color: white;
+    align-self: flex-start; /* 接收的消息靠左 */
+    border-bottom-left-radius: 0;
+}
+
+.input-area {
+    display: flex;
+    margin-top: 10px;
+}
+
+.input-message {
+    flex-grow: 1; /* 自動擴展以填滿空間 */
+    padding: 10px;
+}
+
+.send-button {
+    background-color: #007BFF; /* 發送按鈕顏色 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding: 10px 15px; /* 按鈕內邊距 */
+}

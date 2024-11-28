@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>oldfe tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <div class="container">
+        <div class="chat-box" id="chatBody">
+            <div class="message sent"><i class="fa-solid fa-toolbox"></i> 我將提供您改變生活的力量，不可不知的小工具清單！</div>
+            <div class="message received"><i class="fa-solid fa-calculator"></i> <a href="calculateArea/index.html">無懼挑戰：精準換算公分與坪數！</a></div>
+            <div class="message received"><i class="fa-solid fa-code-compare"></i> <a href="convertToChinese/index.html">破解編碼之謎：一鍵轉換 Unicode、URL 和十六進制！</a></div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="messageInput" placeholder="輸入消息..." class="input-message">
+            <button onclick="sendMessage()" class="send-button">send</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
