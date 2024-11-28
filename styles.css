@@ -37,6 +37,8 @@ a{
     margin: 5px 0;
     border-radius: 20px;
     max-width: 75%; /* 設置最大寬度 */
+    word-wrap: break-word; /* 確保長單詞能夠換行 */
+    overflow-wrap: break-word; /* 確保長單詞能夠換行 */
 }
 
 .sent {
@@ -70,4 +72,8 @@ a{
     border-radius: 5px;
     cursor: pointer;
     padding: 10px 15px; /* 按鈕內邊距 */
+}
+
+.title ,.example ,.explain{
+    cursor: pointer;
 }

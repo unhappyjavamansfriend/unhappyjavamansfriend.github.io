@@ -1,6 +1,20 @@
 var receivedAlertMessag = '請輸入有效的長和寬數值，例如：300*400';
+var isExplainClicked = false;
+var isExampleClicked = false;
 
-function sendMessage() {
+function receivedMessage(messageText){
+    setTimeout(() => {
+        const receivedMessage = document.createElement('div');
+        receivedMessage.classList.add('message', 'received');
+        receivedMessage.innerHTML = messageText;
+        chatBody.appendChild(receivedMessage);
+        
+        // Scroll to the bottom of the chat body
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }, 1000);
+}
+
+function sendMessage(ex) {
     const chatBody = document.getElementById('chatBody');
     // const messageInput = document.getElementById('messageInput');
     const messageText = messageInput.value.trim();
@@ -21,16 +35,49 @@ function sendMessage() {
     messageInput.value = '';
 }
 
-function receivedMessage(messageText){
-    setTimeout(() => {
+function removeEx(){
+    $('.message.sent.canRemove').remove();
+    $('.message.received.canRemove').remove();
+    isExplainClicked = false;
+    isExampleClicked = false;
+}
+
+function explain(){
+    if(!isExplainClicked){
         const receivedMessage = document.createElement('div');
-        receivedMessage.classList.add('message', 'received');
-        receivedMessage.innerHTML = messageText;
+
+        receivedMessage.classList.add('message', 'received' ,'canRemove');
+        receivedMessage.innerHTML = `坪是一種常用的面積單位<br>1 坪等於 3.305785 平方公尺`;
         chatBody.appendChild(receivedMessage);
         
-        // Scroll to the bottom of the chat body
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }, 1000);
+        const receivedMessage2 = document.createElement('div');
+        receivedMessage2.classList.add('message', 'received' ,'canRemove');
+        receivedMessage2.innerHTML = `範例：<br>
+                    長：300 公分<br>
+                    寬：400 公分<br>
+                    面積（平方公分）= 300 × 400 = 120000<br>
+                    面積（坪數）= 120000 / 10000（平方公尺） / 3.305785 ≈ 3.63<br>
+                    面積: 120000.00 平方公分 ≈ 3.63 坪`;
+        chatBody.appendChild(receivedMessage2);
+        isExplainClicked = true;
+    }
+}
+
+function example(){
+    if(!isExampleClicked){
+        const sentMessage = document.createElement('div');
+        sentMessage.classList.add('message', 'sent' ,'canRemove');
+        sentMessage.textContent = `300*400`;
+        chatBody.appendChild(sentMessage);
+        
+        const receivedMessage = document.createElement('div');
+        receivedMessage.classList.add('message', 'received' ,'canRemove');
+        receivedMessage.innerHTML =`長：300 公分<br>
+                        寬：400 公分<br>
+                        計算結果：3.6300 坪`;
+        chatBody.appendChild(receivedMessage);
+        isExampleClicked = true;
+    }
 }
 
 function calculateArea(messageText){

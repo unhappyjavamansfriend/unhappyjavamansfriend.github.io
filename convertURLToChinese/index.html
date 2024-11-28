@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>破解編碼之謎：一鍵轉換 Unicode、URL 和十六進制！</title>
+    <title>解密編碼世界：掌握字符解析 URL！</title>
     <link rel="stylesheet" href="../styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -13,12 +14,13 @@
             <a href="../index.html" class="home-link"><i class="fas fa-home"></i></a>
         </div>
         <div class="chat-box" id="chatBody">
-            <div class="message sent"><i class="fa-solid fa-code-compare"></i> Unicode 表示：\u65e9\u4e0a\u597d\u4e2d\u570b</div>
-            <div class="message received">早上好中國</div>
-            <div class="message sent"><i class="fa-solid fa-code-compare"></i> URL 編碼：%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B</div>
-            <div class="message received">我有冰淇淋</div>
-            <div class="message sent"><i class="fa-solid fa-code-compare"></i> 十六進制數組：0x6211,0x5F88,0x559C,0x6B61</div>
-            <div class="message received">我很喜歡</div>
+            <div class="message sent title" onclick="removeEx()">
+                <i class="fa-solid fa-code"></i> URL 編碼 
+            </div>
+            <div class="message sent explain" onclick="explain()"><i class="fas fa-hand-pointer"></i>
+                點我生成說明</div>
+            <div class="message sent example" onclick="example()"><i class="fas fa-hand-pointer"></i>
+                點我生成範例</div>
         </div>
         <div class="input-area">
             <input type="text" id="messageInput" placeholder="輸入消息..." class="input-message">
