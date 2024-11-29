@@ -61,8 +61,14 @@ function receivedMessage(messageText){
     }, 1000);
 }
 
-function resultMethod(){
-    return receivedErrotMessage;
+function resultMethod(messageText){
+    var resultMessage = ''
+    if(messageText === `你是誰`){
+        resultMessage = `我是你爹`
+    }else{
+        resultMessage = messageText
+    }
+    return [resultMessage ,resultMessage];
 }
 
 function common_explain(receivedMessageArray){
@@ -84,7 +90,7 @@ function common_explain(receivedMessageArray){
 }
 
 
-function common_example(sentMessageArray ,receivedMessageArray){
+function common_example(sentMessageArray ,receivedMessageArray ){
     if(!isExampleClicked){
         sentMessageArray.forEach((item, index) => {
             if(!/^\s*$/.test(item) && item !== null){

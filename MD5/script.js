@@ -1,12 +1,12 @@
 isTypeClicked = false;
 var messageTextArray = ['32位[大]' ,'32位[小]' ,'16位[大]' ,'16位[小]']
-var receivedErrotMessage = '無效輸入';
 
 function resultMethod(messageText) {
     if(messageText === null || messageText === ''){
-        return receivedErrotMessage
+        receivedMessage = null;
+        return [receivedMessage ,copyMessage];
     }
-    console.log(messageText)
+    // console.log(messageText)
     var upper32 = CryptoJS.MD5(messageText).toString().toUpperCase();
     var upper16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toUpperCase();
     var lower32 = CryptoJS.MD5(messageText).toString().toLowerCase();
@@ -19,7 +19,10 @@ function resultMethod(messageText) {
     if(messageText.includes('@@')){
         var type = messageText.split(splitVar)[0];
         messageText = messageText.split(splitVar)[1]
-        if(type.includes(messageTextArray[0])){       receivedMessage = upper32;
+        if(messageText === ''){
+            receivedMessage = null;
+            return [receivedMessage ,copyMessage];
+        }else if(type.includes(messageTextArray[0])){ receivedMessage = upper32;
         }else if(type.includes(messageTextArray[1])){ receivedMessage = lower32;
         }else if(type.includes(messageTextArray[2])){ receivedMessage = upper16;
         }else if(type.includes(messageTextArray[3])){ receivedMessage = lower16;
