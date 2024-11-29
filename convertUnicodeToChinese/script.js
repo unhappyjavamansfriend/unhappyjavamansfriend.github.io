@@ -1,13 +1,17 @@
 var receivedErrorMessage = '無效輸入';
 
-function resultMethod(input) {
-    if (input.startsWith('\\u')) {
-        return input.split('\\u').map(code => {
+function resultMethod(messageText) {
+    if (messageText.startsWith('\\u')) {
+        return messageText.split('\\u').map(code => {
             return code ? String.fromCharCode(parseInt(code, 16)) : '';
         }).join('');
+    }else if (messageText.includes('\\u')) {
+        if (!messageText.startsWith('\\u')) {
+            return receivedErrorMessage;
+        }
     }else{
         // 將字符串轉換為 Unicode 編碼格式 (\uXXXX)
-        return Array.from(input)
+        return Array.from(messageText)
         .map(char => {
             const codePoint = char.codePointAt(0).toString(16);
             return codePoint.length > 4 
