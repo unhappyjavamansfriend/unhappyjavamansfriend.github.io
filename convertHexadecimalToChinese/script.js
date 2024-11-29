@@ -1,21 +1,28 @@
 var receivedErrorMessage = '無效輸入';
 
 // 將十六進制數組轉換為字符串
-function resultMethod(input) {
-    if(input.match(/0x[0-9A-Fa-f]+/g)) {
-        var array = input.split(splitVar);
-        if (Array.isArray(array)) {
-            return array.map(code => String.fromCharCode(code)).join('');
+function resultMethod(messageText) {
+    splitVar = ",";
+    if(messageText.match(/0x[0-9A-Fa-f]+/g)) {
+        if(messageText.includes(splitVar)){
+            var array = messageText.split(splitVar);
+            if (Array.isArray(array)) {
+                return array.map(code => String.fromCharCode(code)).join('');
+            }
+        }else if(messageText.length > 6){
+            return receivedErrorMessage
+        }else if(messageText.match(/0x[0-9A-Fa-f]+/g)) {
+            return String.fromCharCode(messageText);
         }
     }else{
-        return stringToHexArray(input);
+        return stringToHexArray(messageText);
     }
     return receivedErrorMessage;
 }
 
 // 將字符串轉換為十六進制數組
-function stringToHexArray(input) {
-    return Array.from(input).map(char => '0x'+char.charCodeAt(0).toString(16).padStart(2, '0'));
+function stringToHexArray(messageText) {
+    return Array.from(messageText).map(char => '0x'+char.charCodeAt(0).toString(16).padStart(2, '0'));
 }
 
 function explain(){
@@ -24,7 +31,7 @@ function explain(){
 }
 
 function example(){
-    var sentMessageArray = [`0x6211@@0x5F88@@0x559C@@0x6B61` ,`冰淇淋`]
-    var receivedMessageArray = [`我很喜歡` ,`0x51b0@@0x6dc7@@0x6dcb`]
+    var sentMessageArray = [`0x6211,0x5F88,0x559C,0x6B61` ,`冰淇淋`]
+    var receivedMessageArray = [`我很喜歡` ,`0x51b0,0x6dc7,0x6dcb`]
     common_example(sentMessageArray ,receivedMessageArray);
 }

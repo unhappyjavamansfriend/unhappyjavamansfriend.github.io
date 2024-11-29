@@ -1,20 +1,25 @@
 var receivedErrorMessage = '無效輸入';
 
-function resultMethod(input) {
+function resultMethod(messageText) {
     try {
-        if (input.startsWith('%')) {
-            return decodeURIComponent(input);
+        if (messageText.startsWith('%')) {
+            return decodeURIComponent(messageText);
         }else {
-            return encodeURIComponent(input);
+            var messageText1 = encodeURIComponent(messageText);
+            if (messageText1.includes('%')) {
+                return receivedErrorMessage
+            }else{
+                return messageText;
+            } 
         }
     } catch (e) {
         if (e instanceof URIError) {
             console.log(e.name);
             console.log(e.message);
             console.log(e.stack);
+            return receivedErrorMessage;
         }
     }
-    return receivedErrorMessage;
 }
 
 function explain(){
