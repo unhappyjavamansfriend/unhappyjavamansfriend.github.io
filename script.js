@@ -1,34 +1,24 @@
-var receivedAlertMessag = '我沒了';
+var splitVar = "@@";
 
-function sendMessage() {
-    const chatBody = document.getElementById('chatBody');
-    // const messageInput = document.getElementById('messageInput');
-    const messageText = messageInput.value.trim();
+// check remove
+var isExplainClicked = false;
+var isExampleClicked = false;
+var isTypeClicked = false;
 
-    if (messageText === '') return;
+// common class
+var class_message = 'message';
+var class_sent = 'sent';
+var class_received = 'received';
+var class_canRemove = 'canRemove';
+var class_canCopy = 'canCopy';
 
-    // Create a new message bubble for the sent message
-    const sentMessage = document.createElement('div');
-    sentMessage.classList.add('message', 'sent');
-    sentMessage.textContent = messageText;
-    chatBody.appendChild(sentMessage);
+var copy_icon = '<i class="fa-solid fa-copy"></i> ';
 
-    // Scroll to the bottom of the chat body
-    chatBody.scrollTop = chatBody.scrollHeight;
-    
-    // Clear the input field
-    messageInput.value = '';
-    receivedMessage(receivedAlertMessag);
-}
+var toastr_info_title = "點選標題可移除說明、範例、提示"
 
-function receivedMessage(messageText){
-    setTimeout(() => {
-        const receivedMessage = document.createElement('div');
-        receivedMessage.classList.add('message', 'received');
-        receivedMessage.innerHTML = messageText;
-        chatBody.appendChild(receivedMessage);
-        
-        // Scroll to the bottom of the chat body
-        chatBody.scrollTop = chatBody.scrollHeight;
-    }, 1000);
-}
+var toastr_success_explain = "說明已生成";
+var toastr_error_explain = "說明無法重複生成";
+var toastr_success_example = "範例已生成";
+var toastr_error_example = "範例無法重複生成";
+var toastr_success_type = "提示詞已生成，點選該提示詞可複製內容" ;
+var toastr_error_type = "提示詞無法重複生成" ;

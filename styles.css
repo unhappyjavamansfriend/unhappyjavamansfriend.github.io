@@ -74,6 +74,11 @@ a{
     padding: 10px 15px; /* 按鈕內邊距 */
 }
 
-.title ,.example ,.explain{
+.title ,.example ,.explain ,.type
+,.canCopy0 ,.canCopy1 ,.canCopy2 ,.canCopy3 ,.canCopy4{
     cursor: pointer;
 }
+
+/* [class^="canCopy"] {
+    cursor: pointer;
+} */

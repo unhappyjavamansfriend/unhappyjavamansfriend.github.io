@@ -6,15 +6,23 @@
     <title>oldfe tools</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <!-- toastr v2.1.4 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet"  />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="chat-box" id="chatBody">
-            <div class="message sent"><i class="fa-solid fa-toolbox"></i> 我將提供您改變生活的力量，不可不知的小工具清單！</div>
-            <div class="message received"><i class="fa-solid fa-calculator"></i> <a href="calculateArea/index.html">無懼挑戰：精準換算公分與坪數！</a></div>
-            <div class="message received"><i class="fa-solid fa-code"></i> <a href="convertUnicodeToChinese/index.html">破解編碼之謎：Unicode 揭開字符轉換的神秘面紗！</a></div>
-            <div class="message received"><i class="fa-solid fa-code"></i> <a href="convertURLToChinese/index.html">解密編碼世界：掌握字符解析 URL！</a></div>
-            <div class="message received"><i class="fa-solid fa-code"></i> <a href="convertHexadecimalToChinese/index.html">字符解析大作戰：十六進制的全景探索！</a></div>
+            <div class="message received"><i class="fa-solid fa-toolbox"></i> 我將提供您改變生活的力量，不可不知的小工具清單！</div>
+            <div class="message received"><i class="fa-solid fa-calculator"></i> <a href="calculateArea/index.html">無懼挑戰，精準換算公分與坪數！</a></div>
+            <div class="message received"><i class="fa-solid fa-code"></i> <a href="convertUnicodeToChinese/index.html">破解編碼之謎，Unicode 揭開字符轉換的神秘面紗！</a></div>
+            <div class="message received"><i class="fa-solid fa-code"></i> <a href="convertURLToChinese/index.html">解密編碼世界，掌握字符解析 URL！</a></div>
+            <div class="message received"><i class="fa-solid fa-code"></i> <a href="convertHexadecimalToChinese/index.html">字符解析大作戰，十六進制的全景探索！</a></div>
+            <div class="message received"><i class="fa fa-key"></i> <a href="MD5/index.html">不可逆的信任之鎖， MD5 數據校驗的極致力量！</a></div>
+            <!-- <div class="message received"><i class="fa fa-key"></i> <a href="AES/index.html">閃電與鋼鐵的碰撞，AES 高速加密的無雙神器！</a></div>
+            <div class="message received"><i class="fa fa-key"></i> <a href="RSA/index.html">數據的守護者，RSA 非對稱加密的無敵防線！</a></div> -->
         </div>
         <div class="input-area">
             <input type="text" id="messageInput" placeholder="輸入消息..." class="input-message">
