@@ -79,6 +79,6 @@ a{
     cursor: pointer;
 }
 
-/* [class^="canCopy"] {
+[class^="canCopy"] ,[class^="hidden-element"] {
     cursor: pointer;
-} */
+}

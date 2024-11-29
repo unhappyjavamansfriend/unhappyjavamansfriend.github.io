@@ -1,4 +1,5 @@
 toastr.info(toastr_info_title);
+toastr.info(toastr_info_copy);
 
 function copyText(item){
     navigator.clipboard.writeText(item)
@@ -17,6 +18,7 @@ function removeEx(){
     $('.message.received.canRemove').remove();
     if(!isExplainClicked || !isExampleClicked || !isTypeClicked){
         toastr.info(toastr_info_title);
+        toastr.info(toastr_info_copy);
     }
     isExplainClicked=false;
     isExampleClicked=false;

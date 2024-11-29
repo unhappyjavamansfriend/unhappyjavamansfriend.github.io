@@ -1,3 +1,4 @@
+var receivedErrotMessage = '無效輸入';
 var splitVar = "@@";
 
 // check remove
@@ -15,6 +16,7 @@ var class_canCopy = 'canCopy';
 var copy_icon = '<i class="fa-solid fa-copy"></i> ';
 
 var toastr_info_title = "點選標題可移除說明、範例、提示詞"
+var toastr_info_copy = "點選回覆可以複製內容，但不包含說明、範例、提示詞";
 
 var toastr_success_explain = "說明已生成";
 var toastr_error_explain = "說明無法重複生成";

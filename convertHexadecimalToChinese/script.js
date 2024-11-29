@@ -1,23 +1,23 @@
-var receivedErrorMessage = '無效輸入';
-
 // 將十六進制數組轉換為字符串
 function resultMethod(messageText) {
     splitVar = ",";
+    var receivedMessage = '';
     if(messageText.match(/0x[0-9A-Fa-f]+/g)) {
         if(messageText.includes(splitVar)){
             var array = messageText.split(splitVar);
             if (Array.isArray(array)) {
-                return array.map(code => String.fromCharCode(code)).join('');
+                receivedMessage = array.map(code => String.fromCharCode(code)).join('')
             }
         }else if(messageText.length > 6){
-            return receivedErrorMessage
+            receivedMessage = null;
         }else if(messageText.match(/0x[0-9A-Fa-f]+/g)) {
-            return String.fromCharCode(messageText);
+            receivedMessage = String.fromCharCode(messageText)
         }
     }else{
-        return stringToHexArray(messageText);
+        // 無法trim 十六進制數組所以toString()，詳見message.js hiddenElement()
+        receivedMessage = stringToHexArray(messageText).toString();
     }
-    return receivedErrorMessage;
+    return [receivedMessage ,receivedMessage];
 }
 
 // 將字符串轉換為十六進制數組
