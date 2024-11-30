@@ -69,7 +69,7 @@ function example(){
     common_example(sentMessageArray ,receivedMessageArray);
 }
 
-function type(){
+function type123(){
     var receivedMessageArray = [messageTextArray[0]+splitVar,
                                 messageTextArray[1]+splitVar,
                                 messageTextArray[2]+splitVar,

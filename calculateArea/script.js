@@ -1,5 +1,5 @@
 // var receivedErrorMessage = `請輸入有效的長和寬數值，例如：300*400`;
-isTypeClicked = true; // 沒用到isTypeClicked 元素所以true先寫死關閉標題提醒用，詳見toastr.js removeEx()
+isTypeClicked = true; // 沒用到isTypeClicked 元素所以true先寫死關閉標題提醒用，詳見toastr.js canRemoveMessage()
 
 function resultMethod(messageText){
     var resultMessage = '';
@@ -30,13 +30,11 @@ function resultMethod(messageText){
     var areaInPing = areaInSquareMeters / 3.305785;
     // Simulate receiving a reply after a delay
     
-    var resultMessage = `長：${length}公分<br>
+    var resultMessage = `長：${length} 公分<br>
                 寬：${width} 公分<br> 
                 計算結果：${areaInPing.toFixed(4)} 坪`;
 
-    var copyMessage = `長：${length}公分
-                        寬：${width} 公分
-                        計算結果：${areaInPing.toFixed(4)} 坪`;
+    var copyMessage = `${areaInPing.toFixed(4)}坪`;
 
     return [resultMessage ,copyMessage];
 }

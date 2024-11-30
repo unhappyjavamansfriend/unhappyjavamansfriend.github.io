@@ -54,7 +54,7 @@ function example(){
 }
 
 var messageTextArray = [`decodeURI` ,`encodeURI`]
-function type(){
+function type123(){
     var receivedMessageArray = [messageTextArray[0]+splitVar,
                                 messageTextArray[1]+splitVar
                             ]

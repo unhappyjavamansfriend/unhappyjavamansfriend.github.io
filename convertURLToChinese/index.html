@@ -10,33 +10,25 @@
     <!-- toastr v2.1.4 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet"  />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script src="../message.js"></script>
+    <script src="script.js"></script>
 </head>
 <body>
     <div class="container">
         <div class="link-area">
-            <a href="../index.html" class="home-link"><i class="fas fa-home"></i></a>
+            <a href="../index.html" class="icon-link"><i class="fas fa-home"></i></a>
+            <a onclick="explain()" class="icon-link"><i class="fa-solid fa-circle-info"></i></a>
+            <a onclick="example()" class="icon-link"><i class="fa-solid fa-pen-nib"></i></a>
+            <a onclick="type123()" class="icon-link"><i class="fa-solid fa-pen-to-square"></i></a>
+            <a onclick="removeAllMessage()" class="icon-link"><i class="fa fa-trash"></i></a>
+            <br><br><i class="fa-solid fa-code"></i> 解密編碼世界，掌握字符解析 URL！
         </div>
         <div class="chat-box" id="chatBody">
-            <div class="message received title" onclick="removeEx()">
-                <i class="fa-solid fa-code"></i> URL 編碼 
-            </div>
-            <div class="message received explain" onclick="explain()"><i class="fas fa-hand-pointer"></i>
-                點我生成說明</div>
-            <div class="message received example" onclick="example()"><i class="fas fa-hand-pointer"></i>
-                點我生成範例</div>
-            <div class="message received type" onclick="type()"><i class="fas fa-hand-pointer"></i>
-                點我生成提示詞</div>
-            <!-- <div class="message received example" onclick="example2()"><i class="fas fa-hand-pointer"></i>
-                點我生成更多範例</div> -->
         </div>
         <div class="input-area">
             <input type="text" id="messageInput" placeholder="輸入消息..." class="input-message">
             <button onclick="sendMessage()" class="send-button">send</button>
         </div>
     </div>
-    <script src="../script.js"></script>
-    <script src="../toastr.js"></script>
-    <script src="../message.js"></script>
-    <script src="script.js"></script>
 </body>
 </html>

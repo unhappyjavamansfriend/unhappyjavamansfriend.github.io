@@ -18,8 +18,9 @@ a{
     margin-bottom: 10px;
 }
 
-.home-link {
-    color: #FFFFFF;
+.icon-link{
+    padding: 0px 2px;
+    cursor: pointer;
 }
 
 .chat-box {
@@ -74,11 +75,14 @@ a{
     padding: 10px 15px; /* 按鈕內邊距 */
 }
 
-.title ,.example ,.explain ,.type
-,.canCopy0 ,.canCopy1 ,.canCopy2 ,.canCopy3 ,.canCopy4{
+.title ,.example ,.explain ,.type{
     cursor: pointer;
 }
 
-[class^="canCopy"] ,[class^="hidden-element"] {
+[class^="message received canCopy"] {
+    cursor: pointer;
+}
+
+[class^="message received canRemove canCopy"] {
     cursor: pointer;
 }
