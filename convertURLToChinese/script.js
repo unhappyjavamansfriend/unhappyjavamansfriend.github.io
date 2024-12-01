@@ -1,4 +1,21 @@
-isTypeClicked = false;
+const map = new Map();
+map.set(`title`,`${code_icon} 解密編碼世界，掌握字符解析 URL！`);
+map.set(`common_explain_received`,[`URL編碼（又稱為百分比編碼）
+    編碼 是一種將不適合在  中使用的字符轉換為可安全傳輸的格式的方法。這些字符包括空格、特殊符號等。 編碼使用 % 符號後跟兩位十六進制數字來表示字符。
+`]);
+map.set(`common_example_sent`,[`%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B`,
+    `速度與激情9`,
+    // `速度與%E6%BF%80%E6%83%859`,
+    // `%E9%80%9F%E5%BA%A6%E8%88%87激情9`
+    ]);
+map.set(`common_example_received`,[`我有冰淇淋`,
+    `%E9%80%9F%E5%BA%A6%E8%88%87%E6%BF%80%E6%83%859`,
+    // `%E9%80%9F%E5%BA%A6%E8%88%87%25E6%25BF%2580%25E6%2583%25859`,
+    // `速度與激情9`
+    ]);
+map.set(`common_type123_received` ,[`decodeURI@@` ,`encodeURI@@`])
+initContainer(map)
+
 function resultMethod(messageText) {
     var receivedMessage = '';
     if(messageText.includes(splitVar)){
@@ -30,35 +47,6 @@ function resultMethod(messageText) {
         }
     }
     return [receivedMessage ,receivedMessage]
-}
-
-function explain(){
-    var receivedMessageArray = [`URL編碼（又稱為百分比編碼）
-                 編碼 是一種將不適合在  中使用的字符轉換為可安全傳輸的格式的方法。這些字符包括空格、特殊符號等。 編碼使用 % 符號後跟兩位十六進制數字來表示字符。
-            `]
-    common_explain(receivedMessageArray);
-}
-
-function example(){
-    var sentMessageArray = [`%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B`,
-        `速度與激情9`,
-        // `速度與%E6%BF%80%E6%83%859`,
-        // `%E9%80%9F%E5%BA%A6%E8%88%87激情9`
-        ]
-    var receivedMessageArray = [`我有冰淇淋`,
-        `%E9%80%9F%E5%BA%A6%E8%88%87%E6%BF%80%E6%83%859`,
-        // `%E9%80%9F%E5%BA%A6%E8%88%87%25E6%25BF%2580%25E6%2583%25859`,
-        // `速度與激情9`
-        ]
-    common_example(sentMessageArray ,receivedMessageArray);
-}
-
-var messageTextArray = [`decodeURI` ,`encodeURI`]
-function type123(){
-    var receivedMessageArray = [messageTextArray[0]+splitVar,
-                                messageTextArray[1]+splitVar
-                            ]
-    common_type(receivedMessageArray)
 }
 
 // function example2(){

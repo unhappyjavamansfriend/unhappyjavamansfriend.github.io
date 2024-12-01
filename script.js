@@ -15,8 +15,16 @@ var class_canCopy = 'canCopy';
 
 var copy_icon = '<i class="fa-solid fa-copy"></i> ';
 var hand_pointer_icon = '<i class="fas fa-hand-pointer"></i> ';
-
 var toastr_info_copy = `游標顯示 ${hand_pointer_icon} 表示可以複製該內容`;
+
+var calculator_icon = '<i class="fa-solid fa-calculator"></i>';
+var code_icon = '<i class="fa-solid fa-code"></i>';
+var key_icon = '<i class="fa fa-key"></i>';
+
+var explain_icon = '<i class="fa-solid fa-circle-info"></i>';
+var example_icon = '<i class="fa-solid fa-pen-nib"></i>';
+var type123_icon = '<i class="fa-solid fa-pen-to-square"></i>';
+var removeAllMessage_icon = '<i class="fa fa-trash"></i>';
 
 var toastr_warning_errotMessage = '無效輸入';
 
@@ -27,6 +35,72 @@ var toastr_warning_example = "當前已有範例";
 var toastr_success_type = `提示詞已生成，${hand_pointer_icon} 點選該提示詞可複製內容` ;
 var toastr_warning_type = "當前已有提示詞" ;
 var toastr_success_removeMessage = "對話已清除";
+
+function initContainer(map){
+    const container = document.createElement('div');
+    container.classList.add('container');
+    document.body.appendChild(container);
+
+    const linkarea = document.createElement('div');
+    linkarea.classList.add('link-area');
+    container.appendChild(linkarea);
+    
+    const chatBody = document.createElement('div');
+    chatBody.classList.add('chat-box');
+    chatBody.id = 'chatBody';
+    container.appendChild(chatBody);
+
+    const inputarea = document.createElement('div');
+    inputarea.classList.add('input-area');
+    container.appendChild(inputarea);
+
+    const messageInput = document.createElement('input');
+    messageInput.classList.add('input-message');
+    messageInput.id = 'messageInput'
+    messageInput.placeholder = '輸入消息...';
+    inputarea.appendChild(messageInput);
+
+    const sendbutton = document.createElement('button');
+    sendbutton.classList.add('send-button');
+    sendbutton.textContent = 'send';
+    sendbutton.onclick = function () {sendMessage()}
+    inputarea.appendChild(sendbutton);
+    
+    const home = document.createElement('a');
+    home.classList.add('icon-link');
+    home.href = '../index.html';
+    linkarea.appendChild(home);
+    
+    const home_icon = document.createElement('i');
+    home_icon.classList.add('fas' ,'fa-home');
+    home.appendChild(home_icon);
+    
+    var icon_array = [explain_icon ,example_icon ,type123_icon ,removeAllMessage_icon]
+    var function_array = [
+        () => common_explain(map.get('common_explain_received')) ,
+        () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
+        () => common_type123(map.get('common_type123_received')) ,
+        () => removeAllMessage()
+    ]
+
+    function_array.forEach((item ,index) => {
+        if(!map.has('common_type123_received') && index === 2) return;
+        const icon_function = document.createElement('a');
+        icon_function.classList.add('icon-link');
+        icon_function.innerHTML = icon_array[index]
+        icon_function.onclick = function () {item() }
+        linkarea.appendChild(icon_function);
+    })
+
+    linkarea.appendChild(document.createElement('br'));
+    linkarea.appendChild(document.createElement('br'));
+    
+    const title = document.createElement('div');
+    title.innerHTML = map.get('title');
+    linkarea.appendChild(title);
+    
+}
+
 
 async function sendMessage(isAsync = false) {
     const chatBody = document.getElementById('chatBody');
@@ -98,6 +172,7 @@ function resultMethod(messageText){
 }
 
 function common_explain(receivedMessageArray){
+    const chatBody = document.getElementById('chatBody');
     if(!isExplainClicked){
         receivedMessageArray.unshift(toastr_info_copy);
         receivedMessageArray.forEach((item) => {
@@ -117,6 +192,7 @@ function common_explain(receivedMessageArray){
 }
 
 function common_example(sentMessageArray ,receivedMessageArray ){
+    const chatBody = document.getElementById('chatBody');
     if(!isExampleClicked){
         sentMessageArray.forEach((item, index) => {
             if(!/^\s*$/.test(item) && item !== null){
@@ -143,8 +219,9 @@ function common_example(sentMessageArray ,receivedMessageArray ){
 }
 
 var typeCount = false;
-function common_type(receivedMessageArray){
-    if(!isTypeClicked){
+function common_type123(receivedMessageArray){
+    const chatBody = document.getElementById('chatBody');
+    if(!isTypeClicked && receivedMessageArray !== null){
         receivedMessageArray.forEach((item, index) => {
             if(!/^\s*$/.test(item) && item.trim() !== null){
                 const receivedMessage = document.createElement('div');
@@ -170,7 +247,7 @@ function common_type(receivedMessageArray){
 function copyText(item){
     navigator.clipboard.writeText(item)
         .then(() => {
-            toastr.success('Content copied to clipboard!')
+            toastr.success(`Content "${item}" copied to clipboard!`)
         })
         .catch(err => {
             toastr.warning('Failed to copy')
@@ -178,7 +255,6 @@ function copyText(item){
         });
 }
 
-isTypeClicked = true; // 大部分沒用到isTypeClicked 元素所以true先寫死關閉標題提醒用，詳見toastr.js canRemoveMessage()
 function removeAllMessage(){
     // 移除說明、範例
     $('.message.sent.canRemove').remove();
@@ -201,7 +277,7 @@ function removeAllMessage(){
         }
     }
     toastr.success(toastr_success_removeMessage);
-    isExplainClicked=false;
-    isExampleClicked=false;
+    isExplainClicked = false;
+    isExampleClicked = false;
     isTypeClicked = false;
 }

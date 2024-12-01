@@ -1,3 +1,10 @@
+const map = new Map();
+map.set(`title`,`${code_icon} 破解編碼之謎，Unicode 揭開字符轉換的神秘面紗！`);
+map.set(`common_explain_received`,[`Unicode 是一種字符編碼標準，旨在為世界上所有的字符提供唯一的編碼。每個字符都有一個對應的數字編碼，通常以十六進制表示。`]);
+map.set(`common_example_sent`,[`\\u65E9\\u4E0A\\u597D\\u4E2D\\u570B` ,`我很喜歡冰淇淋`]);
+map.set(`common_example_received`,[`早上好中國` ,`\\u6211\\u5f88\\u559c\\u6b61\\u51b0\\u6dc7\\u6dcb`]);
+initContainer(map)
+
 function resultMethod(messageText) {
     var receivedMessage = '';
     if (messageText.startsWith('\\u')) {
@@ -20,15 +27,4 @@ function resultMethod(messageText) {
         .join('');
     }
     return [receivedMessage ,receivedMessage];
-}
-
-function explain(){
-    var receivedMessageArray = [`Unicode 是一種字符編碼標準，旨在為世界上所有的字符提供唯一的編碼。每個字符都有一個對應的數字編碼，通常以十六進制表示。`];
-    common_explain(receivedMessageArray);
-}
-
-function example(){
-    var sentMessageArray = [`\\u65E9\\u4E0A\\u597D\\u4E2D\\u570B` ,`我很喜歡冰淇淋`]
-    var receivedMessageArray = [`早上好中國` ,`\\u6211\\u5f88\\u559c\\u6b61\\u51b0\\u6dc7\\u6dcb`]
-    common_example(sentMessageArray ,receivedMessageArray);
 }
