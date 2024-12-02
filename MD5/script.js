@@ -1,6 +1,9 @@
-var messageTextArray = ['32位[大]' ,'32位[小]' ,'16位[大]' ,'16位[小]']
+var messageTextArray = ['32位[大]' ,'32位[小]' ,'16位[大]' ,'16位[小]'];
+titleMessage = `不可逆的信任之鎖， MD5 數據校驗的極致力量！`;
+common_header(titleMessage ,isHome);
+
 const map = new Map();
-map.set(`title`,`${key_icon} 不可逆的信任之鎖， MD5 數據校驗的極致力量！`);
+map.set(`title`,`${key_icon} ${titleMessage}`);
 map.set(`common_explain_received`,[`MD5訊息摘要演算法（英語：MD5 Message-Digest Algorithm），一種被廣泛使用的密碼雜湊函數，可以產生出一個128位元（16位元組）的散列值（hash value），用於確保信息傳輸完整一致。MD5由羅納德·李維斯特設計，於1992年公開，用以取代MD4演算法。這套演算法的程序在 RFC 1321 中被加以規範。
     將數據（如一段文字）運算變為另一固定長度值，是雜湊算法的基礎原理。`]);
 map.set(`common_example_sent`,['qwe123' ,`${messageTextArray[0]}@@qwe123`]);
@@ -13,44 +16,43 @@ map.set(`common_type123_received` ,[messageTextArray[0]+splitVar,
     messageTextArray[1]+splitVar,
     messageTextArray[2]+splitVar,
     messageTextArray[3]+splitVar
-])
-initContainer(map)
+]);
+initContainer(map ,isHome);
 
 function resultMethod(messageText) {
+    var receivedMessage = null;
+    var copyMessage = null;
     if(messageText === null || messageText === ''){
-        receivedMessage = null;
-        return [receivedMessage ,copyMessage];
+        return [receivedMessage ,receivedMessage];
     }
     // console.log(messageText)
-    var upper32 = CryptoJS.MD5(messageText).toString().toUpperCase();
-    var upper16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toUpperCase();
-    var lower32 = CryptoJS.MD5(messageText).toString().toLowerCase();
-    var lower16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toLowerCase();
+    const upper32 = CryptoJS.MD5(messageText).toString().toUpperCase();
+    const upper16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toUpperCase();
+    const lower32 = CryptoJS.MD5(messageText).toString().toLowerCase();
+    const lower16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toLowerCase();
     // console.log(`upper32=${upper32}`)
     // console.log(`upper16=${upper16}`)
     // console.log(`lower32=${lower32}`)
     // console.log(`lower16=${lower16}`)
     
     if(messageText.includes('@@')){
-        var type = messageText.split(splitVar)[0];
-        messageText = messageText.split(splitVar)[1]
+        const type = messageText.split(splitVar)[0];
+        messageText = messageText.split(splitVar)[1];
         if(messageText === ''){
-            receivedMessage = null;
-            return [receivedMessage ,copyMessage];
+            return [receivedMessage ,receivedMessage];
         }else if(type.includes(messageTextArray[0])){ receivedMessage = upper32;
         }else if(type.includes(messageTextArray[1])){ receivedMessage = lower32;
         }else if(type.includes(messageTextArray[2])){ receivedMessage = upper16;
         }else if(type.includes(messageTextArray[3])){ receivedMessage = lower16;
-    
         }
 
-        var copyMessage = receivedMessage;
+        copyMessage = receivedMessage;
         receivedMessage = `加密前字串：<br>
                             ${messageText}<br>
                             MD5加密後：${type}<br>
                             ${receivedMessage}`;
     }else{
-        var receivedMessage = `
+        receivedMessage = `
             ${messageTextArray[0]}：<br>${upper32}<br>
             ${messageTextArray[1]}：<br>${lower32}<br>
             ${messageTextArray[2]}：<br>${upper16}<br>
