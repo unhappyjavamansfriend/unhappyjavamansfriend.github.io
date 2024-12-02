@@ -21,7 +21,6 @@ initContainer(map ,isHome);
 
 function resultMethod(messageText) {
     var receivedMessage = null;
-    var copyMessage = null;
     if(messageText === null || messageText === ''){
         return [receivedMessage ,receivedMessage];
     }
@@ -46,7 +45,6 @@ function resultMethod(messageText) {
         }else if(type.includes(messageTextArray[3])){ receivedMessage = lower16;
         }
 
-        copyMessage = receivedMessage;
         receivedMessage = `加密前字串：<br>
                             ${messageText}<br>
                             MD5加密後：${type}<br>
@@ -58,14 +56,7 @@ function resultMethod(messageText) {
             ${messageTextArray[2]}：<br>${upper16}<br>
             ${messageTextArray[3]}：<br>${lower16}
         `;
-
-        copyMessage = `
-            ${messageTextArray[0]}：${upper32}
-            ${messageTextArray[1]}：${lower32}
-            ${messageTextArray[2]}：${upper16}
-            ${messageTextArray[3]}：${lower16}
-        `;
     }
 
-    return [receivedMessage ,copyMessage];
+    return [receivedMessage ,receivedMessage.replaceAll('<br>','')];
 }

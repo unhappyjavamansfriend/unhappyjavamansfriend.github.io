@@ -30,7 +30,7 @@ ${toastr_warning_keySet}<br>
 ${toastr_warning_encryptData}<br>
 加密後會顯示<br>
 密鑰：0lUuXjWvUPNtcDw1rYYQlw==<br>
-偏移量 iv：<br>jGsK2uxYqpv3qlUx<br>
+偏移量：<br>jGsK2uxYqpv3qlUx<br>
 加密前：<br>123<br>
 加密後：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>`,
 
@@ -39,11 +39,11 @@ ${toastr_warning_encryptData}<br>
 ${toastr_warning_decryptData}<br>
 解密後會顯示<br>
 密鑰：0lUuXjWvUPNtcDw1rYYQlw==<br>
-偏移量 iv：<br>jGsK2uxYqpv3qlUx<br>
+偏移量：<br>jGsK2uxYqpv3qlUx<br>
 解密前：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>
 解密後：<br>123<br>`
 ]);
-map.set(`common_type123_received` ,[`key@@`,`encryptedData@@`,`iv@@`]);
+map.set(`common_type123_received` ,[`key@@`,`data@@`,`iv@@`]);
 initContainer(map ,isHome);
 
 addIcon();
@@ -60,13 +60,11 @@ async function addIcon(){
             const key = await generateKey(item);
             keyStr = await keyToString(key);
             copyMessage = `key length:${item}<br>${keyStr}`
-            receivedMessage(copyMessage ,copyMessage.replace('<br>',' '));
+            receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',' '));
             keySet = key;
-            console.log(`generateKey:${keySet}`);
             // toastr.info(`該功能可生成${item} 長度的key`);
             setTimeout(() => {
                 toastr.success(`key已生成`);
-                // alertDecryptOREncrypt();
             },1000);
         };
         linkareaDivTag.appendChild(iconfunctionATag);
@@ -79,16 +77,10 @@ async function addIcon(){
         let encryptedData = '';
         let iv = '';
         if(keySet !== ''){
-            console.log(`todo keySet:${keySet}`);
-            console.log(`todo keyStr:${keyStr}`)
             keyStr = await keyToString(keySet);
         }
         if(data !== ''){
-            console.log(`todo data:${data}`)
-            // encryptedData = arrayBufferToBase64(data);
-            // if(encryptedData === ''){
-                encryptedData = data;
-            // }
+            encryptedData = data;
         }
         if(ivSet !== ''){
             iv = arrayBufferToBase64(ivSet);
@@ -100,7 +92,7 @@ async function addIcon(){
                             偏移量：<br>${iv}<br>
                             加解密字串：<br>${encryptedData}
             `;
-            receivedMessage(copyMessage ,copyMessage.replace('<br>',''));
+            receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',''));
 
             setTimeout(() => {
                 toastr.success(`已顯示當前密鑰、加解密字串、偏移量`);
@@ -132,7 +124,7 @@ async function addIcon(){
                     加密前：<br> ${beforeEncrypt}<br>
                     加密後：<br>${arrayBufferToBase64(encryptedData)}<br>`;
 
-        receivedMessage(copyMessage ,copyMessage.replace('<br>',''));
+        receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',''));
         setTimeout(() => {
             toastr.success(toastr_success_encryptData);
         },1000);
@@ -166,7 +158,7 @@ async function addIcon(){
                         解密前：<br> ${beforeDecrypt}<br>
                         解密後：<br>${decryptedData}<br>`;
 
-            receivedMessage(copyMessage ,decryptedData);
+            receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',''));
             setTimeout(() => {
                 toastr.success(toastr_success_decryptData);
             },1000);
@@ -235,25 +227,6 @@ async function stringToKey(base64Key) {
 
 }
 
-
-// 測試範例
-(async () => {
-//     const key = await generateKey(128);
-//     const message = "Hello, AES!";
-
-//     // 加密
-//     const { encryptedData, iv } = await encryptData(key, message);
-// alert( await keyToString(key));
-//     console.log("Encrypted Data:", encryptedData);
-//     console.log("Encrypted Data:", arrayBufferToBase64(encryptedData));
-//     console.log("IV:", iv);
-//     console.log("IV:", arrayBufferToBase64(iv));
-
-//     // 解密
-//     const decryptedData = await decryptData(key, encryptedData, iv);
-//     console.log("Decrypted Data:", decryptedData);
-})();
-
 // 插到回覆框裡面隱藏，複製用
 var hiddenElementInteger = 0; 
 function hiddenElement(copyMessage ,receivedMessageDivTag){
@@ -273,12 +246,11 @@ function receivedMessage(messageText ,copyMessage){
     setTimeout(() => {
         const receivedMessageDivTag = document.createElement('div');
         receivedInteger++;
-        // console.log(`receivedInteger:${receivedInteger}`)
         receivedMessageDivTag.classList.add(class_message, class_received ,class_canCopy+receivedInteger);
         receivedMessageDivTag.innerHTML = messageText;
         chatBody.appendChild(receivedMessageDivTag);
         
-        hiddenElement(copyMessage ,receivedMessageDivTag)
+        hiddenElement(copyMessage.replace(/[ \t\r]+/g, '') ,receivedMessageDivTag)
         // Scroll to the bottom of the chat body
         chatBody.scrollTop = chatBody.scrollHeight;
     }, 1000);
@@ -312,7 +284,6 @@ async function sendMessage() {
     if(messageText.includes("key@@") && messageText.split(splitVar)[1] !== ''){
         try{
             keySet = messageText.split(splitVar)[1];
-            console.log(`sendMessage keySet:${keySet}`);
             keySet = await stringToKey(keySet);
             toastr.success(`密鑰長度正確`);
         } catch (error) {
@@ -321,51 +292,26 @@ async function sendMessage() {
                 toastr.info(`密鑰長度有誤，請${toastr_warning_keySet}`);
             },1000);
         }
-    }else if(messageText.includes("encryptedData@@") && messageText.split(splitVar)[1] !== ''){
+    }else if(messageText.includes("data@@") && messageText.split(splitVar)[1] !== ''){
         const encryptedData = messageText.split(splitVar)[1];
         data = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0)); 
-        data = messageText;
-        console.log(`sendMessage data:${data}`);
+        data = encryptedData;
     }else if(messageText.includes("iv@@") && messageText.split(splitVar)[1] !== ''){
         const iv = messageText.split(splitVar)[1];
         ivSet = base64ToArrayBuffer(iv); 
     }else{
         data = messageText;
-        console.log(`sendMessage data:${data}`);
     }
 
-    // resultMessageArray = resultMethod(messageText); // Sync execution
     // Scroll to the bottom of the chat body
     chatBody.scrollTop = chatBody.scrollHeight;
     
     // Clear the input field
     messageInput.value = '';
-
-    // alertDecryptOREncrypt();
-
-    // resultMessage = resultMessageArray[0]
-    // copyMessage = resultMessageArray[1]
-    // console.log(resultMessage)
-    // console.log(copyMessage)
-    // if(resultMessage === null || typeof resultMessage === 'undefined'){
-    //     toastr.warning(toastr_warning_errotMessage);
-    // }else{
-        // receivedMessage(resultMessage);
-    // }
-}
-
-function alertDecryptOREncrypt(){
-    if(keySet !== '' && data !== '' && ivSet !== ''){
-        toastr.info(`記得${toastr_warning_decryptData}`);
-    }else if(keySet !== '' && data !== ''){
-        toastr.info(`記得${toastr_warning_encryptData}`);
-    }
 }
 
 // 加密
 async function encryptData(key, data) {
-    console.log(`key:${key}`);
-    console.log(`data:${data}`);
     const iv = crypto.getRandomValues(new Uint8Array(12)); // 生成隨機 IV（初始化向量）
     const encodedData = new TextEncoder().encode(data); // 編碼成 Uint8Array
     const encrypted = await crypto.subtle.encrypt(
@@ -382,9 +328,6 @@ async function encryptData(key, data) {
 // 解密
 async function decryptData(key, encryptedData, iv) {
     try {
-        console.log(`key:${key}`);
-        console.log(`encryptedData:${encryptedData}`);
-        console.log(`iv:${iv}`);
         const decrypted = await crypto.subtle.decrypt(
             {
                 name: "AES-GCM",

@@ -24,13 +24,6 @@ function resultMethod(messageText) {
     try {
     // URL 轉換字符 decodeURIComponent 
     // 字符轉換URL encodeURIComponent 
-        // if(type === 'decodeURI'){
-        //     // console.log("a")
-        //     receivedMessage = decodeURIComponent(messageText);
-        // }else if(type === 'encodeURI'){
-        //     // console.log("b")
-        //     receivedMessage = encodeURIComponent(messageText);
-        // }else 
         if (messageText.startsWith('%')) {
             // console.log("c")
             receivedMessage = decodeURIComponent(messageText);
