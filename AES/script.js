@@ -1,4 +1,4 @@
-titleMessage = `閃電與鋼鐵的碰撞，AES 高速加密的無雙神器！`;
+titleMessage = `閃電與鋼鐵的碰撞，AES-GCM 高速加密的無雙神器！`;
 common_header(titleMessage ,isHome);
 
 const D_icon = '<i class="fa-solid fa-d"></i>';
@@ -12,36 +12,76 @@ var keyStr = '';
 
 var toastr_success_encryptData = `加密成功`;
 var toastr_success_decryptData = `解密成功`;
-var toastr_warning_keySet = `點選128 / 256 生成密鑰`;
-var toastr_warning_encryptDataMessage = `請輸入內容`;
-var toastr_warning_decryptDataMessage = `請提供加密字串`;
-var toastr_warning_IV = `請提供偏移量iv`;
+var toastr_warning_keySet = `點選128 / 256 生成${aes_Key}`;
 var toastr_warning_encryptData = `點選 ${E_icon} 進行加密`;
 var toastr_warning_decryptData = `點選 ${D_icon} 進行解密`;
 
+var aes_Plaintext = '明文数据（Plaintext）';
+var aes_Key = '密钥（Key）';
+var aes_IV = '初始化向量（IV，Initialization Vector）';
+var aes_Ciphertext = '密文数据（Ciphertext）';
+
 const map = new Map();
 map.set(`title`,`${key_icon} ${titleMessage}`);
-map.set(`common_explain_received`,[`進階加密標準（英語：Advanced Encryption Standard，縮寫：AES），又稱Rijndael加密法（荷蘭語發音：[ˈrɛindaːl]，音似英文的「Rhine doll」），是美國聯邦政府採用的一種區塊加密標準。這個標準用來替代原先的DES，已經被多方分析且廣為全世界所使用。經過五年的甄選流程，進階加密標準由美國國家標準與技術研究院（NIST）於2001年11月26日發佈於FIPS PUB 197，並在2002年5月26日成為有效的標準。現在，進階加密標準已然成為對稱金鑰加密中最流行的演算法之一。`]);
-map.set(`common_example_sent`,[``,``]);
+map.set(`common_explain_received`,[`進階加密標準（英語：Advanced Encryption Standard，縮寫：AES），又稱Rijndael加密法（荷蘭語發音：[ˈrɛindaːl]，音似英文的「Rhine doll」），是美國聯邦政府採用的一種區塊加密標準。這個標準用來替代原先的DES，已經被多方分析且廣為全世界所使用。經過五年的甄選流程，進階加密標準由美國國家標準與技術研究院（NIST）於2001年11月26日發佈於FIPS PUB 197，並在2002年5月26日成為有效的標準。現在，進階加密標準已然成為對稱金鑰加密中最流行的演算法之一。`,
+    `加密所需的数据<br>
+必需的数据：<br>
+1. 明文数据（Plaintext）：<br>
+
+需要被加密的原始数据，通常是字符串或字节数组。<br>
+2. 密钥（Key）：<br>
+
+用于加密和解密的秘密值。<br>
+AES 密钥长度可以是 128 位、192 位或 256 位（即 16、24 或 32 字节的数组）。<br>
+3. 初始化向量（IV，Initialization Vector）：<br>
+
+用于增加加密随机性，使相同的明文每次加密结果不同。<br>
+通常是随机生成的字节数组。<br>
+不需要保密，但必须确保唯一性，尤其是在模式如 CBC 和 GCM 中。`,
+`解密所需的数据<br>
+必需的数据：<br>
+1. 密文数据（Ciphertext）：<br>
+
+加密后的数据，需要解密还原为明文。<br>
+2. 密钥（Key）：<br>
+
+加密时使用的同一个密钥。<br>
+3. 初始化向量（IV，Initialization Vector）：<br>
+
+加密时使用的 IV，必须与加密时的值一致。`
+]);
+map.set(`common_example_sent`,[``,``,``,``]);
 map.set(`common_example_received`,[
-`encrypt 加密範例<br>
+`encrypt 加密範例1<br>
 ${toastr_warning_keySet}<br>
 輸入要加密的內容：123<br>
 ${toastr_warning_encryptData}<br>
 加密後會顯示<br>
-密鑰：0lUuXjWvUPNtcDw1rYYQlw==<br>
-偏移量：<br>jGsK2uxYqpv3qlUx<br>
-加密前：<br>123<br>
-加密後：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>`,
+${aes_Plaintext}：<br>123<br>
+${aes_Key}：<br>0lUuXjWvUPNtcDw1rYYQlw==<br>
+${aes_IV}：<br>jGsK2uxYqpv3qlUx<br>
+${aes_Ciphertext}：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>`,
 
-`decrypt 解密範例<br>
+`decrypt 解密範例1<br>
 點選${list_icon} 會顯示當前密鑰、加解密字串、偏移量<br>
 ${toastr_warning_decryptData}<br>
 解密後會顯示<br>
-密鑰：0lUuXjWvUPNtcDw1rYYQlw==<br>
-偏移量：<br>jGsK2uxYqpv3qlUx<br>
-解密前：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>
-解密後：<br>123<br>`
+${aes_Ciphertext}：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>
+${aes_Key}：0lUuXjWvUPNtcDw1rYYQlw==<br>
+${aes_IV}：<br>jGsK2uxYqpv3qlUx<br>
+${aes_Plaintext}：<br>123<br>`,
+
+`encrypt 加密範例2<br>
+使用現有的參數進行AES加密<br>
+${aes_Plaintext}：<br>data@@123<br>
+${aes_Key}：<br>key@@0lUuXjWvUPNtcDw1rYYQlw==<br>
+${aes_IV}：<br>iv@@jGsK2uxYqpv3qlUx<br>`,
+
+`decrypt 解密範例2<br>
+使用現有的參數進行AES解密<br>
+${aes_Ciphertext}：<br>data@@bRP26/CDQLITaPmu5ok/NgY+GQ==<br>
+${aes_Key}：<br>key@@0lUuXjWvUPNtcDw1rYYQlw==<br>
+${aes_IV}：<br>iv@@jGsK2uxYqpv3qlUx<br>`,
 ]);
 map.set(`common_type123_received` ,[`key@@`,`data@@`,`iv@@`]);
 initContainer(map ,isHome);
@@ -57,7 +97,7 @@ async function addIcon(){
         iconfunctionATag.classList.add('icon-link');
         iconfunctionATag.innerHTML = item;
         iconfunctionATag.onclick = async function () {
-            const key = await generateKey(item);
+            const key = await generateGCMKey(item);
             keyStr = await keyToString(key);
             copyMessage = `key length:${item}<br>${keyStr}`
             receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',' '));
@@ -86,16 +126,16 @@ async function addIcon(){
             iv = arrayBufferToBase64(ivSet);
         }
         if(keySet === '' && data === '' && ivSet === ''){
-            toastr.info(`該功能可顯示當前密鑰、加解密字串、偏移量`);
+            toastr.info(`該功能可顯示當前${aes_Key}、${aes_Ciphertext}、${aes_IV}`);
         }else{
-            copyMessage = `密鑰：<br>${keyStr}<br>
-                            偏移量：<br>${iv}<br>
-                            加解密字串：<br>${encryptedData}
+            copyMessage = `${aes_Ciphertext}：<br>${encryptedData}<br>
+                            ${aes_Key}：<br>${keyStr}<br>
+                            ${aes_IV}：<br>${iv}
             `;
             receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',''));
 
             setTimeout(() => {
-                toastr.success(`已顯示當前密鑰、加解密字串、偏移量`);
+                toastr.success(`已顯示當前${aes_Key}、${aes_Ciphertext}、${aes_IV}`);
             },1000);
         }
     };
@@ -108,21 +148,21 @@ async function addIcon(){
     encryptDatafunctionATag.innerHTML = E_icon;
     encryptDatafunctionATag.onclick = async function () {
         if(keySet === ''){
-            toastr.warning(`加密前請先${toastr_warning_keySet}`);
+            toastr.warning(`缺少${aes_Key}`);
             return;
         }
         if(data === ''){
-            toastr.warning(`加密前請先${toastr_warning_encryptDataMessage}`);
+            toastr.warning(`缺少${aes_Plaintext}`);
             return;
         }
         const { encryptedData, iv } = await encryptData(keySet, data);
         const beforeEncrypt = data;
         data = arrayBufferToBase64(encryptedData);
         ivSet = iv;
-        copyMessage = `密鑰：<br>${await keyToString(keySet)}<br>
-                    偏移量 iv：<br>${arrayBufferToBase64(iv)}<br>
-                    加密前：<br> ${beforeEncrypt}<br>
-                    加密後：<br>${arrayBufferToBase64(encryptedData)}<br>`;
+        copyMessage = `${aes_Plaintext}：<br> ${beforeEncrypt}<br>
+                    ${aes_Key}：<br>${await keyToString(keySet)}<br>
+                    ${aes_IV}：<br>${arrayBufferToBase64(iv)}<br>
+                    ${aes_Ciphertext}：<br>${arrayBufferToBase64(encryptedData)}<br>`;
 
         receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',''));
         setTimeout(() => {
@@ -137,15 +177,15 @@ async function addIcon(){
     decryptDatafunctionATag.innerHTML = D_icon;
     decryptDatafunctionATag.onclick = async function () {
         if(keySet === ''){
-            toastr.warning(toastr_warning_keySet);
+            toastr.warning(`缺少${aes_Key}`);
             return;
         }
         if(data === ''){
-            toastr.warning(`解密前請先${toastr_warning_decryptDataMessage}`);
+            toastr.warning(`缺少${aes_Ciphertext}`);
             return;
         }
         if(ivSet === ''){
-            toastr.warning(`解密前請先${toastr_warning_IV}`);
+            toastr.warning(`缺少${aes_IV}`);
             return;
         }
         const beforeDecrypt = data;
@@ -153,10 +193,10 @@ async function addIcon(){
         const decryptedData = await decryptData(keySet, encryptedData, ivSet);
         if(typeof decryptedData !== 'undefined'){
             data = decryptedData;
-            copyMessage = `密鑰：<br>${await keyToString(keySet)}<br>
-                        偏移量 iv：<br>${arrayBufferToBase64(ivSet)}<br>
-                        解密前：<br> ${beforeDecrypt}<br>
-                        解密後：<br>${decryptedData}<br>`;
+            copyMessage = `${aes_Ciphertext}：<br> ${beforeDecrypt}<br>
+                        ${aes_Key}：<br>${await keyToString(keySet)}<br>
+                        ${aes_IV}：<br>${arrayBufferToBase64(ivSet)}<br>
+                        ${aes_Plaintext}：<br>${decryptedData}<br>`;
 
             receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',''));
             setTimeout(() => {
@@ -168,7 +208,7 @@ async function addIcon(){
 }
 
 // 生成隨機密鑰
-async function generateKey(generateKeyLength) {
+async function generateGCMKey(generateKeyLength) {
     return await crypto.subtle.generateKey(
         {
             name: "AES-GCM",
@@ -285,11 +325,11 @@ async function sendMessage() {
         try{
             keySet = messageText.split(splitVar)[1];
             keySet = await stringToKey(keySet);
-            toastr.success(`密鑰長度正確`);
+            toastr.success(`${aes_Key}長度正確`);
         } catch (error) {
             toastr.error(error.message);
             setTimeout(() => {
-                toastr.info(`密鑰長度有誤，請${toastr_warning_keySet}`);
+                toastr.info(`${aes_Key}長度有誤，請${toastr_warning_keySet}`);
             },1000);
         }
     }else if(messageText.includes("data@@") && messageText.split(splitVar)[1] !== ''){
@@ -308,6 +348,9 @@ async function sendMessage() {
     
     // Clear the input field
     messageInput.value = '';
+    if(keySet !== '' && data !== ''){
+        toastr.info(`可${toastr_warning_encryptData}<br>或${toastr_warning_decryptData}`);
+    }
 }
 
 // 加密
@@ -339,7 +382,7 @@ async function decryptData(key, encryptedData, iv) {
         return new TextDecoder().decode(decrypted); // 解碼為字符串
     } catch (error) {
         if (error.name === "OperationError") {
-            toastr.warning(`請檢查參數是否正確`);
+            toastr.warning(`請檢查${aes_Ciphertext}、${aes_Key}、${aes_IV}是否正確`);
             console.error("OperationError occurred:", error.message);
         }
         console.error("Encryption error:", error);

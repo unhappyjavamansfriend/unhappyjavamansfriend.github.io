@@ -45,12 +45,11 @@ function resultMethod(messageText) {
         }else if(type.includes(messageTextArray[3])){ receivedMessage = lower16;
         }
 
-        receivedMessage = `加密前字串：<br>
-                            ${messageText}<br>
-                            MD5加密後：${type}<br>
-                            ${receivedMessage}`;
+        receivedMessage = `加密前字串：<br>${messageText}<br>
+                            MD5加密後：${type}<br>${receivedMessage}`;
     }else{
-        receivedMessage = `
+        receivedMessage = `加密前字串：<br>${messageText}<br>
+        MD5加密後：<br>
             ${messageTextArray[0]}：<br>${upper32}<br>
             ${messageTextArray[1]}：<br>${lower32}<br>
             ${messageTextArray[2]}：<br>${upper16}<br>
