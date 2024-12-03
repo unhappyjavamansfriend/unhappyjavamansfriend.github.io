@@ -26,6 +26,14 @@ const example_icon = '<i class="fa-solid fa-pen-nib"></i>';
 const type123_icon = '<i class="fa-solid fa-pen-to-square"></i>';
 const removeAllMessage_icon = '<i class="fa fa-trash"></i>';
 
+const D_icon = '<i class="fa-solid fa-d"></i>';
+const E_icon = '<i class="fa-solid fa-e"></i>';
+const list_icon = '<i class="fa-solid fa-list"></i>';
+var toastr_success_encryptData = `加密成功`;
+var toastr_success_decryptData = `解密成功`;
+var toastr_warning_encryptData = `點選 ${E_icon} 進行加密`;
+var toastr_warning_decryptData = `點選 ${D_icon} 進行解密`;
+
 var toastr_warning_errotMessage = '無效輸入';
 
 const toastr_success_explain = "說明已生成";
@@ -36,6 +44,7 @@ const toastr_success_type = `提示詞已生成，${hand_pointer_icon} 點選該
 const toastr_warning_type = "當前已有提示詞" ;
 const toastr_success_removeMessage = "對話已清除";
 const toastr_warning_removeMessage = "當前沒有對話";
+const dividingLine = `－－ － － －我是分隔線－ － － －－`;
 
 function common_header(titleTagValue ,isHome){
     /*<meta charset="UTF-8"></meta>
@@ -160,6 +169,7 @@ function initContainer(map ,isHome){
                         `${code_icon}  <a href="convertURLToChinese/index.html">解密編碼世界，掌握字符解析 URL！</a>`,
                         `${key_icon}  <a href="MD5/index.html">不可逆的信任之鎖， MD5 數據校驗的極致力量！</a>`,
                         `${key_icon}  <a href="AES/index.html">閃電與鋼鐵的碰撞，AES 高速加密的無雙神器！</a>`,
+                        `${key_icon}  <a href="RSA/index.html">數據的守護者，RSA 非對稱加密的絕對防線！</a>`,
         ];
         titleArray.forEach(item => {
             const toolDivTag = document.createElement('div');
@@ -172,7 +182,7 @@ function initContainer(map ,isHome){
 
 function sendMessage() {
     const chatBody = document.getElementById('chatBody');
-    // const messageInput = document.getElementById('messageInput');
+    const messageInput = document.getElementById('messageInput');
     const messageText = messageInput.value.trim();
 
     if (messageText === '') return;
@@ -183,7 +193,7 @@ function sendMessage() {
     sentMessageDivTag.textContent = messageText;
     chatBody.appendChild(sentMessageDivTag);
 
-    resultMessageArray = resultMethod(messageText); // Sync execution
+    let resultMessageArray = resultMethod(messageText); // Sync execution
     // Scroll to the bottom of the chat body
     chatBody.scrollTop = chatBody.scrollHeight;
     
@@ -211,22 +221,21 @@ function hiddenElement(copyMessage ,receivedMessageDivTag){
     hiddenElementDivTag.style.display = 'none';
     receivedMessageDivTag.appendChild(hiddenElementDivTag);
     receivedMessageDivTag.onclick = function() {
-        // 無法trim 十六進制數組
-        copyText(copyMessage.trim().replace(/[ \t\r]+/g, ''));
+        copyText(copyMessage);
     };
 }
 
 var receivedInteger = 0; //回覆訊息copy用
-function receivedMessage(messageText){
+function receivedMessage(messageText ,copyMessage){
     setTimeout(() => {
         const receivedMessageDivTag = document.createElement('div');
         receivedInteger++;
-        // console.log(`receivedInteger:${receivedInteger}`)
         receivedMessageDivTag.classList.add(class_message, class_received ,class_canCopy+receivedInteger);
         receivedMessageDivTag.innerHTML = messageText;
         chatBody.appendChild(receivedMessageDivTag);
-        
-        hiddenElement(copyMessage ,receivedMessageDivTag)
+        if(typeof copyMessage !=='undefined'){
+            hiddenElement(copyMessage.replaceAll('<br>','').replace(/[ \t\r]+/g, '') ,receivedMessageDivTag)
+        }
         // Scroll to the bottom of the chat body
         chatBody.scrollTop = chatBody.scrollHeight;
     }, 1000);
@@ -331,4 +340,12 @@ function removeAllMessage(){
     isExplainClicked = false;
     isExampleClicked = false;
     isTypeClicked = false;
+}
+
+function receivedMessageArray(array){
+    receivedMessage(dividingLine);
+    array.forEach(item =>{
+        receivedMessage(`${item[0]}：<br>${item[1]}` ,item[1]);
+    });
+    receivedMessage(dividingLine);
 }

@@ -1,4 +1,6 @@
 var messageTextArray = ['32位[大]' ,'32位[小]' ,'16位[大]' ,'16位[小]'];
+var beforeStr = '加密前字串';
+var afterMD5 = 'MD5加密後';
 titleMessage = `不可逆的信任之鎖， MD5 數據校驗的極致力量！`;
 common_header(titleMessage ,isHome);
 
@@ -20,42 +22,55 @@ map.set(`common_type123_received` ,[messageTextArray[0]+splitVar,
 initContainer(map ,isHome);
 
 function resultMethod(messageText) {
-    var receivedMessage = null;
-    if(messageText === null || messageText === ''){
-        return [receivedMessage ,receivedMessage];
-    }
-    // console.log(messageText)
     const upper32 = CryptoJS.MD5(messageText).toString().toUpperCase();
     const upper16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toUpperCase();
     const lower32 = CryptoJS.MD5(messageText).toString().toLowerCase();
     const lower16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toLowerCase();
-    // console.log(`upper32=${upper32}`)
-    // console.log(`upper16=${upper16}`)
-    // console.log(`lower32=${lower32}`)
-    // console.log(`lower16=${lower16}`)
     
     if(messageText.includes('@@')){
         const type = messageText.split(splitVar)[0];
         messageText = messageText.split(splitVar)[1];
-        if(messageText === ''){
-            return [receivedMessage ,receivedMessage];
-        }else if(type.includes(messageTextArray[0])){ receivedMessage = upper32;
+        if(type.includes(messageTextArray[0])){ receivedMessage = upper32;
         }else if(type.includes(messageTextArray[1])){ receivedMessage = lower32;
         }else if(type.includes(messageTextArray[2])){ receivedMessage = upper16;
         }else if(type.includes(messageTextArray[3])){ receivedMessage = lower16;
         }
-
-        receivedMessage = `加密前字串：<br>${messageText}<br>
-                            MD5加密後：${type}<br>${receivedMessage}`;
+        receivedMessageArray([
+            [beforeStr ,messageText],
+            [afterMD5 ,receivedMessage],
+        ])
     }else{
-        receivedMessage = `加密前字串：<br>${messageText}<br>
-        MD5加密後：<br>
-            ${messageTextArray[0]}：<br>${upper32}<br>
-            ${messageTextArray[1]}：<br>${lower32}<br>
-            ${messageTextArray[2]}：<br>${upper16}<br>
-            ${messageTextArray[3]}：<br>${lower16}
-        `;
+        receivedMessageArray([
+            [beforeStr ,messageText],
+            [afterMD5 ,''],
+            [messageTextArray[0] ,upper32],
+            [messageTextArray[1] ,lower32],
+            [messageTextArray[2] ,upper16],
+            [messageTextArray[3] ,lower16],
+        ])
     }
+    setTimeout(() => {
+        toastr.success(toastr_success_encryptData);
+    },1000);
+}
 
-    return [receivedMessage ,receivedMessage.replaceAll('<br>','')];
+function sendMessage() {
+    const chatBody = document.getElementById('chatBody');
+    const messageInput = document.getElementById('messageInput');
+    const messageText = messageInput.value.trim();
+
+    if (messageText === '') return;
+
+    // Create a new message bubble for the sent message
+    const sentMessageDivTag = document.createElement('div');
+    sentMessageDivTag.classList.add(class_message, class_sent ,class_usermessage);
+    sentMessageDivTag.textContent = messageText;
+    chatBody.appendChild(sentMessageDivTag);
+
+    resultMethod(messageText); // Sync execution
+    // Scroll to the bottom of the chat body
+    chatBody.scrollTop = chatBody.scrollHeight;
+    
+    // Clear the input field
+    messageInput.value = '';
 }
