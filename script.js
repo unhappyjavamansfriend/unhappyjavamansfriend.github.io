@@ -184,6 +184,8 @@ function sendMessage() {
     const chatBody = document.getElementById('chatBody');
     const messageInput = document.getElementById('messageInput');
     const messageText = messageInput.value.trim();
+    // Clear the input field
+    messageInput.value = '';
 
     if (messageText === '') return;
 
@@ -197,8 +199,6 @@ function sendMessage() {
     // Scroll to the bottom of the chat body
     chatBody.scrollTop = chatBody.scrollHeight;
     
-    // Clear the input field
-    messageInput.value = '';
     
     resultMessage = resultMessageArray[0]
     copyMessage = resultMessageArray[1]

@@ -126,10 +126,16 @@ async function decryptData(key, encryptedData, iv) {
         return new TextDecoder().decode(decrypted); // 解碼為字符串
     } catch (error) {
         if (error.name === "OperationError") {
+            toastr.error(error.message);
             toastr.warning(`請檢查${aes_Ciphertext}、${aes_Key}、${aes_IV}是否正確`);
             console.error(error.message);
+        }else if (error.name === "TypeError") {
+            toastr.error(error.message);
+            // toastr.warning(`請檢查${aes_Ciphertext}、${aes_Key}、${aes_IV}是否正確`);
+            console.error(error.message);
+        }else{
+            console.error("Encryption error:", error);
         }
-        console.error("Encryption error:", error);
         // throw error; // 如果需要處理，這裡可以自定義錯誤行為
     }
 }
@@ -156,32 +162,49 @@ function arrayBufferToBase64(buffer) {
 }
 
 // 將 Base64 字符串轉換為 ArrayBuffer
-function base64ToArrayBuffer(base64) {
-    const binaryString = window.atob(base64); // 將 Base64 字符串解碼為二進制字符串
-    const len = binaryString.length;
-    const bytes = new Uint8Array(len);
-    
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binaryString.charCodeAt(i);
+function base64ToArrayBuffer(base64 ,type) {
+    try {
+        const binaryString = window.atob(base64); // 將 Base64 字符串解碼為二進制字符串
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        
+        for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes; // 返回 Uint8Array
+    } catch (error) {
+        if(type === 'stringToKey'){
+            toastr.error(error.message);
+            toastr.warning(`請檢查${aes_Key}是否正確`);
+        }else{
+            if (error.name === "InvalidCharacterError") {
+                toastr.error(error.message);
+                toastr.warning(`請檢查${aes_IV}是否正確`);
+                console.error(error.message);
+                return null;
+            }  
+        }
     }
-    return bytes; // 返回 Uint8Array
 }
 
-async function stringToKey(base64Key) {
-    const rawKey = base64ToArrayBuffer(base64Key).buffer;
-    const key = await crypto.subtle.importKey(
-        "raw", // 格式
-        rawKey, // 原始密鑰數據
-        {
-            name: "AES-GCM", // 使用的加密算法
-            length: 256, // 密鑰長度（128、192 或 256 位）
-        },
-        true, // 是否允許導出密鑰
-        ["encrypt", "decrypt"] // 用途：加密和解密
-    );
-
-    return key; // 返回 CryptoKey 對象
-
+async function stringToKey(base64Key ,type) {
+    const rawKey = base64ToArrayBuffer(base64Key ,type).buffer;
+    try{
+        const key = await crypto.subtle.importKey(
+            "raw", // 格式
+            rawKey, // 原始密鑰數據
+            {
+                name: "AES-GCM", // 使用的加密算法
+                length: 256, // 密鑰長度（128、192 或 256 位）
+            },
+            true, // 是否允許導出密鑰
+            ["encrypt", "decrypt"] // 用途：加密和解密
+        );
+        return key; // 返回 CryptoKey 對象
+    } catch (error) {
+        toastr.error(error.message);
+        return null;
+    }
 }
 
 /**message html start*/
@@ -190,42 +213,65 @@ async function sendMessage() {
     const chatBody = document.getElementById('chatBody');
     const messageInput = document.getElementById('messageInput');
     const messageText = messageInput.value.trim();
-
+    // Clear the input field
+    messageInput.value = '';
+    
     if (messageText === '') return;
-
+    
     // Create a new message bubble for the sent message
     const sentMessageDivTag = document.createElement('div');
     sentMessageDivTag.classList.add(class_message, class_sent ,class_usermessage);
     sentMessageDivTag.textContent = messageText;
     chatBody.appendChild(sentMessageDivTag);
-    
-    if(messageText.includes("key@@") && messageText.split(splitVar)[1] !== ''){
-        try{
-            keySet = messageText.split(splitVar)[1];
-            keySet = await stringToKey(keySet);
-            toastr.success(`${aes_Key} 符合`);
-        } catch (error) {
-            toastr.error(error.message);
-            setTimeout(() => {
-                toastr.info(`${aes_Key}${aes_keylength}有誤，請${toastr_warning_keySet}`);
-            },1000);
-        }
-    }else if(messageText.includes("encryptedData@@") && messageText.split(splitVar)[1] !== ''){
-        const encryptedData = messageText.split(splitVar)[1];
-        data = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0)); 
-        data = encryptedData;
-    }else if(messageText.includes("iv@@") && messageText.split(splitVar)[1] !== ''){
-        const iv = messageText.split(splitVar)[1];
-        ivSet = base64ToArrayBuffer(iv); 
-    }else{
-        data = messageText;
-    }
 
     // Scroll to the bottom of the chat body
     chatBody.scrollTop = chatBody.scrollHeight;
     
-    // Clear the input field
-    messageInput.value = '';
+    if(messageText.includes("@@")){
+        if(messageText.split(splitVar).length > 2){
+            toastr.warning(toastr_warning_errotMessage);
+            return;
+        }
+    }
+
+    if(messageText.includes("key@@")){
+        const keyStr = messageText.split(splitVar)[1];
+        if(keyStr === ''){
+            toastr.warning(`缺少${aes_Key}`);
+            return;
+        }
+        keySet = await stringToKey(keyStr ,'stringToKey');
+        if(keySet === null){
+            setTimeout(() => {
+                toastr.info(`${aes_Key}${aes_keylength}有誤，請${toastr_warning_keySet}`);
+            },1000);
+            return;
+        }
+        toastr.success(`${aes_Key} 符合`);
+    }else if(messageText.includes("encryptedData@@")){
+        const encryptedData = messageText.split(splitVar)[1];
+        if(encryptedData === ''){
+            toastr.warning(`缺少${aes_Ciphertext}`);
+            return;
+        }
+        data = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0)); 
+        data = encryptedData;
+    }else if(messageText.includes("iv@@")){
+        let iv = messageText.split(splitVar)[1];
+        if(iv === ''){
+            toastr.warning(`缺少${aes_IV}`);
+            return;
+        }
+        iv = base64ToArrayBuffer(iv); 
+        if(iv === null){
+            return;
+        }else{
+            ivSet = iv;
+        }
+    }else{
+        data = messageText;
+    }
+    
     if(keySet !== '' && data !== ''){
         toastr.info(`可${toastr_warning_encryptData}<br>或${toastr_warning_decryptData}`);
     }
@@ -257,6 +303,9 @@ function generateKeyIcon(linkareaDivTag){
             keySet = key;
             setTimeout(() => {
                 toastr.success(`${aes_Key}已生成`);
+                if(keySet !== '' && data !== ''){
+                    toastr.info(`可${toastr_warning_encryptData}<br>或${toastr_warning_decryptData}`);
+                }
             },1000);
         };
         linkareaDivTag.appendChild(iconATag);
@@ -270,7 +319,7 @@ function generateIVIcon(linkareaDivTag){
     iconATag.onclick = async function () {
         const iv = crypto.getRandomValues(new Uint8Array(12));
         copyMessage = `IV：<br>${arrayBufferToBase64(iv)}`
-        receivedMessage(copyMessage ,copyMessage.replaceAll('<br>',' '));
+        receivedMessage(copyMessage ,arrayBufferToBase64(iv));
         ivSet = iv;
         setTimeout(() => {
             toastr.success(`${aes_IV}已生成`);
@@ -312,12 +361,6 @@ function generateDetailIcon(linkareaDivTag){
             }else{
                 iv = arrayBufferToBase64(ivSet);
             }
-            
-            // copyMessage = `数据：<br>${encryptedData}<br>
-            //                 ${aes_Key}：<br>${keyStr}<br>
-            //                 ${aes_IV}：<br>${iv}
-            // `;
-            // receivedMessage(copyMessage ,copyMessage);
 
             receivedMessageArray([
                 ['数据' ,encryptedData],
@@ -345,12 +388,6 @@ function generateEncryptIcon(linkareaDivTag){
         data = arrayBufferToBase64(encryptedData);
         ivSet = iv;
         const keyStr = await keyToString(keySet);
-        // copyMessage = `${aes_Plaintext}：<br> ${beforeEncrypt}<br>
-        //             ${aes_Key}：<br>${await keyToString(keySet)}<br>
-        //             ${aes_IV}：<br>${arrayBufferToBase64(iv)}<br>
-        //             ${aes_Ciphertext}：<br>${arrayBufferToBase64(encryptedData)}<br>`;
-
-        // receivedMessage(copyMessage ,copyMessage);
 
         receivedMessageArray([
             [aes_Plaintext ,beforeEncrypt],
@@ -379,12 +416,6 @@ function generateDecryptIcon(linkareaDivTag){
         if(typeof decryptedData !== 'undefined'){
             data = decryptedData;
             const keyStr = await keyToString(keySet);
-            // copyMessage = `${aes_Ciphertext}：<br> ${beforeDecrypt}<br>
-            //             ${aes_Key}：<br>${keyStr}<br>
-            //             ${aes_IV}：<br>${arrayBufferToBase64(ivSet)}<br>
-            //             ${aes_Plaintext}：<br>${decryptedData}<br>`;
-
-            // receivedMessage(copyMessage ,copyMessage);
 
             receivedMessageArray([
                 [aes_Ciphertext ,beforeDecrypt],

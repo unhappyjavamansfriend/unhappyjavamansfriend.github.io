@@ -38,17 +38,22 @@ async function generateOAEPKeyPair(keyLength) {
 }
 
 async function encryptData(publicKey, data) {
-    const encodedData = new TextEncoder().encode(data); // 将字符串编码为字节数组
-
-    const encryptedData = await crypto.subtle.encrypt(
-        {
-            name: "RSA-OAEP",
-        },
-        publicKey, // 使用公钥加密
-        encodedData
-    );
-
-    return new Uint8Array(encryptedData); // 返回加密结果
+    try {
+        
+        const encodedData = new TextEncoder().encode(data); // 将字符串编码为字节数组
+    
+        const encryptedData = await crypto.subtle.encrypt(
+            {
+                name: "RSA-OAEP",
+            },
+            publicKey, // 使用公钥加密
+            encodedData
+        );
+    
+        return new Uint8Array(encryptedData); // 返回加密结果
+    } catch (error) {
+        console.error(error.message)
+    }
 }
 
 async function decryptData(privateKey, encryptedData) {
@@ -89,15 +94,23 @@ function base64ToPEM(base64, type) {
 
 // 导出密钥并转换为 PEM 格式
 async function exportKeyToPEM(key, type) {
-    const exportedKey = await crypto.subtle.exportKey("spki", key); // 导出公钥
-    const base64Key = arrayBufferToBase64(exportedKey);
-    return base64ToPEM(base64Key, type);
+    try{
+        const exportedKey = await crypto.subtle.exportKey("spki", key); // 导出公钥
+        const base64Key = arrayBufferToBase64(exportedKey);
+        return base64ToPEM(base64Key, type);
+    }catch(error){
+        console.error(error.message);
+    }
 }
 
 async function exportPrivateKeyToPEM(privateKey) {
-    const exportedKey = await crypto.subtle.exportKey("pkcs8", privateKey); // 导出私钥
-    const base64Key = arrayBufferToBase64(exportedKey);
-    return base64ToPEM(base64Key, "PRIVATE KEY");
+    try{
+        const exportedKey = await crypto.subtle.exportKey("pkcs8", privateKey); // 导出私钥
+        const base64Key = arrayBufferToBase64(exportedKey);
+        return base64ToPEM(base64Key, "PRIVATE KEY");
+    }catch(error){
+        console.error(error.message);
+    }
 }
 
 /**trans function string to key start*/
@@ -157,34 +170,35 @@ async function importPrivateKey(base64Key) {
 }
 
 function extractBase64FromPublicKeyPEM(pem) {
-    // if((/-----BEGIN PUBLIC KEY-----/.test(pem) && /-----END PUBLIC KEY-----/.test(pem))
-    // ||(/-----BEGINPUBLICKEY-----/.test(pem) && /-----ENDPUBLICKEY-----/.test(pem))
-    // ){
-    //     return null;
-    // }else{
+    if((/-----BEGIN PUBLIC KEY-----/.test(pem) && /-----END PUBLIC KEY-----/.test(pem))
+    ||(/-----BEGINPUBLICKEY-----/.test(pem) && /-----ENDPUBLICKEY-----/.test(pem))
+    ){
         return pem
         .replace("-----BEGIN PUBLIC KEY-----", "")
         .replace("-----END PUBLIC KEY-----"  , "")
         .replace("-----BEGINPUBLICKEY-----"  , "")
         .replace("-----ENDPUBLICKEY-----"    , "")
         .replace(/\s+/g, "");
-    // }
+    }else{
+        return null;
+    }
 }
 function extractBase64FromPrivateKeyPEM(pem) {
-    // if((!pem.includes("-----BEGIN PRIVATE KEY-----") && !pem.includes("-----END PRIVATE KEY-----")) 
-    // ||(!pem.includes("-----BEGINPRIVATEKEY-----") && !pem.includes("-----ENDPRIVATEKEY-----"))
-    // ){
-    //     return null;
-    // }else{
+    if((/-----BEGIN PRIVATE KEY-----/.test(pem) && /-----END PRIVATE KEY-----/.test(pem))
+    ||(/-----BEGINPRIVATEKEY-----/.test(pem) && /-----ENDPRIVATEKEY-----/.test(pem))
+    ){
         return pem
             .replace("-----BEGIN PRIVATE KEY-----", "")
             .replace("-----END PRIVATE KEY-----"  , "")
             .replace("-----BEGINPRIVATEKEY-----"  , "")
             .replace("-----ENDPRIVATEKEY-----"    , "")
             .replace(/\s+/g, "");
-    // }
+    }else{
+        return null;
+    }
 }
 
+/**test start*/
 // 示例用法
 // (async function () {
     
@@ -215,12 +229,22 @@ function extractBase64FromPrivateKeyPEM(pem) {
     // console.log("Imported Private Key:", privateKey);
 // })();
 
+async function testEncryptData(publicKey, data) {
+    if (!(publicKey instanceof CryptoKey)) {
+        throw new Error("Provided publicKey is not a valid CryptoKey.");
+    }
+    const encryptedData = await encryptData(publicKey, data);
+    console.log("Encrypted Data:", encryptedData);
+}
+
 /**message html start*/
 
 async function sendMessage() {
     const chatBody = document.getElementById('chatBody');
     const messageInput = document.getElementById('messageInput');
     const messageText = messageInput.value.trim();
+    // Clear the input field
+    messageInput.value = '';
 
     if (messageText === '') return;
 
@@ -229,42 +253,60 @@ async function sendMessage() {
     sentMessageDivTag.classList.add(class_message, class_sent ,class_usermessage);
     sentMessageDivTag.textContent = messageText;
     chatBody.appendChild(sentMessageDivTag);
-    
-    if(messageText.includes("publicKey@@") && messageText.split(splitVar)[1] !== ''){
-        const keySet = extractBase64FromPublicKeyPEM(messageText.split(splitVar)[1]);
-        if(keySet === null){
-            toastr.warning(`${rsa_publicKey} 有誤`);
-            return;
-        }
-        console.log(`keySet:${keySet}`)
-        const publicKeySet = await importPublicKey(keySet);
-        if(publicKey !== publicKeySet){
-            publicKey = publicKeySet;
-            toastr.warning(`${rsa_publicKey} 已變更`);
-        }
-        toastr.success(`${rsa_publicKey} 符合`);
-    }else if(messageText.includes("privateKey@@") && messageText.split(splitVar)[1] !== ''){
-        const keySet = extractBase64FromPrivateKeyPEM(messageText.split(splitVar)[1]);
-        if(keySet === null){
-            toastr.warning(`${rsa_publicKey} 有誤`);
-            return;
-        }
-        const privateKeySet = importPrivateKey(keySet);
-        if(privateKey !== privateKeySet){
-            privateKey = privateKeySet;
-            toastr.warning(`${rsa_publicKey} 已變更`);
-        }
-        toastr.success(`${rsa_privateKey} 符合`);
-    }else{
-        data = messageText;
-    }
 
     // Scroll to the bottom of the chat body
     chatBody.scrollTop = chatBody.scrollHeight;
     
-    // Clear the input field
-    messageInput.value = '';
+        
+    if(messageText.includes("@@")){
+        if(messageText.split(splitVar).length > 2){
+            toastr.warning(toastr_warning_errotMessage);
+            return;
+        }
+    }
 
+    if(messageText.includes("publicKey@@")){
+        const keyStr = messageText.split(splitVar)[1];
+        if(keyStr === ''){
+            toastr.warning(`缺少${aes_Key}`);
+            return;
+        }
+        const keySet = extractBase64FromPublicKeyPEM(messageText.split(splitVar)[1]);
+        if(keySet === null){
+            toastr.warning(`${rsa_privateKey}可能缺少 -----BEGIN PUBLIC KEY----- & -----END PUBLIC KEY-----`);
+            return;
+        }
+        // console.log(`keySet:${keySet}`)
+        const publicKeySet = await importPublicKey(keySet);
+        // console.log(`publicKey1:${publicKey}`);
+        if(publicKey !== publicKeySet){
+            if(publicKey !== '') toastr.warning(`${rsa_publicKey} 已變更`);
+            publicKey = publicKeySet;
+            // console.log(`publicKey2:${publicKey}`);
+        }
+        toastr.success(`${rsa_publicKey} 符合`);
+        // testEncryptData(publicKeySet, 'abc');
+        
+    }else if(messageText.includes("privateKey@@")){
+        const keySet = extractBase64FromPrivateKeyPEM(messageText.split(splitVar)[1]);
+        if(keySet === null){
+            toastr.warning(`${rsa_privateKey}可能缺少 -----BEGIN PRIVATE KEY----- & -----END PRIVATE KEY-----`);
+            return;
+        }
+        console.log(`keySet:${keySet}`)
+        const privateKeySet = importPrivateKey(keySet);
+        console.log(`privateKey1:${privateKey}`);
+        if(privateKey !== privateKeySet){
+            if(privateKey !== '') toastr.warning(`${rsa_privateKey} 已變更`);
+            privateKey = privateKeySet;
+            console.log(`privateKey2:${privateKey}`);
+        }
+        toastr.success(`${rsa_privateKey} 符合`);
+    }else{
+        data = messageText;
+        // console.log(data)
+    }
+    
     if(publicKey !== '' && data !== ''){
         toastr.info(toastr_warning_encryptData);
     }else if(privateKey !== '' && data !== ''){
@@ -321,11 +363,14 @@ function generateDetailIcon(linkareaDivTag){
     iconATag.classList.add('icon-link');
     iconATag.innerHTML = list_icon;
     iconATag.onclick = async function () {
+        console.log(`generateDetailIcon:${data}`)
         let publicKeyPEM = '';
         let privateKeyPEM = '';
+        let base64Data = '';
         if(publicKey === '' && privateKey === '' && data === ''){
             toastr.info(`該功能可顯示當前数据、${rsa_publicKey}、${rsa_privateKey}`);
         }else{
+            console.log(`publicKey:${publicKey}`)
             if(publicKey === ''){
                 setTimeout(() => {
                     toastr.warning(`缺少${rsa_publicKey}`);
@@ -333,6 +378,7 @@ function generateDetailIcon(linkareaDivTag){
             }else{
                 publicKeyPEM = await exportKeyToPEM(publicKey, "PUBLIC KEY");
             }
+            console.log(`privateKey:${privateKey}`)
             if(privateKey === ''){
                 setTimeout(() => {
                     toastr.warning(`缺少${rsa_privateKey}`);
@@ -344,15 +390,13 @@ function generateDetailIcon(linkareaDivTag){
                 setTimeout(() => {
                     toastr.warning(`缺少数据`);
                 },1000);
+            // }else if(doEncrypt){
+            //     base64Data = arrayBufferToBase64(data)
+            }else{
+                base64Data = data;
             }
 
-            // copyMessage = `数据：<br>${data}<br>
-            //                 ${rsa_publicKey}：<br>${publicKeyPEM}<br>
-            //                 ${rsa_privateKey}：<br>${privateKeyPEM}
-            // `;
-            // receivedMessage(copyMessage ,`${publicKeyPEM}<br>${privateKeyPEM}`);
-            
-            receivedMessageArray([['数据',data],
+            receivedMessageArray([['数据',base64Data],
                 [rsa_publicKey ,publicKeyPEM],
                 [rsa_privateKey ,privateKeyPEM],
             ])
@@ -364,7 +408,7 @@ function generateDetailIcon(linkareaDivTag){
     };
     linkareaDivTag.appendChild(iconATag);
 }
-
+// 連續加密兩次會報錯，data應該存字串進到方法在處理
 function generateEncryptIcon(linkareaDivTag){
     const iconATag = document.createElement('a');
     iconATag.classList.add('icon-link');
@@ -376,23 +420,23 @@ function generateEncryptIcon(linkareaDivTag){
         let publicKeyPEM = '';
         let privateKeyPEM = '';
         let encryptedData ='';
+        if (!(publicKey instanceof CryptoKey)) {
+            throw new Error("Provided publicKey is not a valid CryptoKey.");
+        }
+        // console.log(`generateEncryptIcon:${publicKey}`)
         data = await encryptData(publicKey, data)
         encryptedData = arrayBufferToBase64(data);
         publicKeyPEM = await exportKeyToPEM(publicKey, "PUBLIC KEY");
-        privateKeyPEM = await exportPrivateKeyToPEM(privateKey);
-
-        // copyMessage = `${rsa_Plaintext}：<br>${beforeEncrypt}<br>
-        //                 ${rsa_Ciphertext}：<br>${encryptedData}<br>
-        //                 ${rsa_publicKey}：<br>${publicKeyPEM}<br>
-        //                 ${rsa_privateKey}：<br>${privateKeyPEM}
-        //     `;
-        // receivedMessage(copyMessage ,copyMessage);
+        if(privateKey !== ''){
+            privateKeyPEM = await exportPrivateKeyToPEM(privateKey);
+        }
 
         receivedMessageArray([[rsa_Plaintext,beforeEncrypt],
             [rsa_Ciphertext ,encryptedData],
             [rsa_publicKey ,publicKeyPEM],
             [rsa_privateKey ,privateKeyPEM],
         ])
+        console.log(`generateEncryptIcon data:${data}`)
 
         setTimeout(() => {
             toastr.success(toastr_success_encryptData);
@@ -407,7 +451,7 @@ function generateDecryptIcon(linkareaDivTag){
     iconATag.innerHTML = D_icon;
     iconATag.onclick = async function () {
         if(checkData(true) === null) return;
-        
+        console.log(`generateDecryptIcon:${data}`)
         const beforeDecrypt = arrayBufferToBase64(data);
         let publicKeyPEM = '';
         let privateKeyPEM = '';
@@ -416,13 +460,6 @@ function generateDecryptIcon(linkareaDivTag){
         if(typeof decryptedData !== 'undefined'){
             publicKeyPEM = await exportKeyToPEM(publicKey, "PUBLIC KEY");
             privateKeyPEM = await exportPrivateKeyToPEM(privateKey);
-
-            // copyMessage = `${rsa_Plaintext}：<br>${beforeDecrypt}<br>
-            //                 ${rsa_Ciphertext}：<br>${decryptedData}<br>
-            //                 ${rsa_publicKey}：<br>${publicKeyPEM}<br>
-            //                 ${rsa_privateKey}：<br>${privateKeyPEM}
-            //     `;
-            // receivedMessage(copyMessage ,copyMessage);
 
             receivedMessageArray([
                 [rsa_Ciphertext ,beforeDecrypt],

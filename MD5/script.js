@@ -28,6 +28,10 @@ function resultMethod(messageText) {
     const lower16 = CryptoJS.MD5(messageText).toString().substring(8, 24).toLowerCase();
     
     if(messageText.includes('@@')){
+        if(messageText.split(splitVar).length > 2){
+            toastr.warning(toastr_warning_errotMessage);
+            return;
+        }
         const type = messageText.split(splitVar)[0];
         messageText = messageText.split(splitVar)[1];
         if(type.includes(messageTextArray[0])){ receivedMessage = upper32;
@@ -58,6 +62,8 @@ function sendMessage() {
     const chatBody = document.getElementById('chatBody');
     const messageInput = document.getElementById('messageInput');
     const messageText = messageInput.value.trim();
+    // Clear the input field
+    messageInput.value = '';
 
     if (messageText === '') return;
 
@@ -70,7 +76,4 @@ function sendMessage() {
     resultMethod(messageText); // Sync execution
     // Scroll to the bottom of the chat body
     chatBody.scrollTop = chatBody.scrollHeight;
-    
-    // Clear the input field
-    messageInput.value = '';
 }
