@@ -1,5 +1,8 @@
-titleMessage = `數據的守護者，RSA 非對稱加密的絕對防線！`;
+// TODO: 自帶密文、密鑰 報錯
+
+titleMessage = `數據的守護者，RSA-OAEP 非對稱加密的絕對防線！`;
 common_header(titleMessage ,isHome);
+addCSS();
 
 var rsa_keylength = '密钥长度';
 var rsa_Plaintext = '明文数据（Plaintext）';
@@ -19,6 +22,13 @@ addIcon();
 var publicKey = '';
 var privateKey = ''
 var data = '';
+
+function addCSS(){
+    const stylesLinkTag = document.createElement('link');
+    stylesLinkTag.rel = "stylesheet";
+    stylesLinkTag.href = "styles.css";
+    document.head.appendChild(stylesLinkTag);
+}
 
 /**rsa basic function start*/
 // 生成 RSA 密钥对
@@ -57,6 +67,8 @@ async function encryptData(publicKey, data) {
 }
 
 async function decryptData(privateKey, encryptedData) {
+    console.log(`encryptedData:${encryptedData}`)
+    console.log(`privateKey:${privateKey}`)
     try{
         const decryptedData = await crypto.subtle.decrypt(
             {
@@ -85,9 +97,13 @@ function arrayBufferToBase64(buffer) {
 }
 
 // 将 Base64 转换为 PEM 格式
-function base64ToPEM(base64, type) {
+function base64ToPEM(base64, type ,singleLine = false) {
+    console.log(`base64:${base64}`)
     const header = `-----BEGIN ${type}-----\n`;
     const footer = `\n-----END ${type}-----`;
+    if (singleLine) {
+        return `${header}${base64}${footer}`; // 单行 PEM
+    }
     const body = base64.match(/.{1,64}/g).join("\n"); // 每行最多 64 个字符
     return header + body + footer;
 }
@@ -97,7 +113,7 @@ async function exportKeyToPEM(key, type) {
     try{
         const exportedKey = await crypto.subtle.exportKey("spki", key); // 导出公钥
         const base64Key = arrayBufferToBase64(exportedKey);
-        return base64ToPEM(base64Key, type);
+        return base64ToPEM(base64Key, type ,true);
     }catch(error){
         console.error(error.message);
     }
@@ -107,7 +123,7 @@ async function exportPrivateKeyToPEM(privateKey) {
     try{
         const exportedKey = await crypto.subtle.exportKey("pkcs8", privateKey); // 导出私钥
         const base64Key = arrayBufferToBase64(exportedKey);
-        return base64ToPEM(base64Key, "PRIVATE KEY");
+        return base64ToPEM(base64Key, "PRIVATE KEY" ,true);
     }catch(error){
         console.error(error.message);
     }
@@ -363,51 +379,52 @@ function generateDetailIcon(linkareaDivTag){
     iconATag.classList.add('icon-link');
     iconATag.innerHTML = list_icon;
     iconATag.onclick = async function () {
-        console.log(`generateDetailIcon:${data}`)
-        let publicKeyPEM = '';
-        let privateKeyPEM = '';
-        let base64Data = '';
-        if(publicKey === '' && privateKey === '' && data === ''){
-            toastr.info(`該功能可顯示當前数据、${rsa_publicKey}、${rsa_privateKey}`);
-        }else{
-            console.log(`publicKey:${publicKey}`)
-            if(publicKey === ''){
-                setTimeout(() => {
-                    toastr.warning(`缺少${rsa_publicKey}`);
-                },1000);
-            }else{
-                publicKeyPEM = await exportKeyToPEM(publicKey, "PUBLIC KEY");
-            }
-            console.log(`privateKey:${privateKey}`)
-            if(privateKey === ''){
-                setTimeout(() => {
-                    toastr.warning(`缺少${rsa_privateKey}`);
-                },1000);
-            }else{
-                privateKeyPEM = await exportPrivateKeyToPEM(privateKey);
-            }
-            if(data === ''){
-                setTimeout(() => {
-                    toastr.warning(`缺少数据`);
-                },1000);
-            // }else if(doEncrypt){
-            //     base64Data = arrayBufferToBase64(data)
-            }else{
-                base64Data = data;
-            }
-
-            receivedMessageArray([['数据',base64Data],
-                [rsa_publicKey ,publicKeyPEM],
-                [rsa_privateKey ,privateKeyPEM],
-            ])
-
-            setTimeout(() => {
-                toastr.success(`已顯示當前数据、${rsa_publicKey}、${rsa_privateKey}`);
-            },1000);
-        }
+        console.log(`data:${data}`)
+        console.log(`publicKey:${publicKey}`)
+        console.log(`privateKey:${privateKey}`)
     };
     linkareaDivTag.appendChild(iconATag);
 }
+    //     console.log(`generateDetailIcon:${data}`)
+    //     let publicKeyPEM = '';
+    //     let privateKeyPEM = '';
+    //     let base64Data = '';
+    //     if(publicKey === '' && privateKey === '' && data === ''){
+    //         toastr.info(`該功能可顯示當前数据、${rsa_publicKey}、${rsa_privateKey}`);
+    //     }else{
+    //         console.log(`publicKey:${publicKey}`)
+    //         if(publicKey === ''){
+    //             toastr.warning(`缺少${rsa_publicKey}`);
+    //         }else{
+    //             publicKeyPEM = await exportKeyToPEM(publicKey, "PUBLIC KEY");
+    //         }
+    //         console.log(`privateKey:${privateKey}`)
+    //         if(privateKey === ''){
+    //             toastr.warning(`缺少${rsa_privateKey}`);
+    //         }else{
+    //             privateKeyPEM = await exportPrivateKeyToPEM(privateKey);
+    //         }
+    //         if(data === ''){
+    //             toastr.warning(`缺少数据`);
+    //         // }else if(doEncrypt){
+    //         //     base64Data = arrayBufferToBase64(data)
+    //         }else{
+    //             base64Data = data;
+    //         }
+
+    //         receivedMessageArray([['数据',base64Data],
+    //             [rsa_publicKey ,publicKeyPEM],
+    //             [rsa_privateKey ,privateKeyPEM],
+    //         ])
+
+    //         setTimeout(() => {
+    //             toastr.success(`已顯示當前数据、${rsa_publicKey}、${rsa_privateKey}`);
+    //         },1000);
+    //     }
+    // };
+    // linkareaDivTag.appendChild(iconATag);
+    // }
+
 // 連續加密兩次會報錯，data應該存字串進到方法在處理
 function generateEncryptIcon(linkareaDivTag){
     const iconATag = document.createElement('a');
@@ -451,8 +468,8 @@ function generateDecryptIcon(linkareaDivTag){
     iconATag.innerHTML = D_icon;
     iconATag.onclick = async function () {
         if(checkData(true) === null) return;
-        console.log(`generateDecryptIcon:${data}`)
         const beforeDecrypt = arrayBufferToBase64(data);
+        // const beforeDecrypt = data;
         let publicKeyPEM = '';
         let privateKeyPEM = '';
         let decryptedData ='';

@@ -242,9 +242,7 @@ async function sendMessage() {
         }
         keySet = await stringToKey(keyStr ,'stringToKey');
         if(keySet === null){
-            setTimeout(() => {
-                toastr.info(`${aes_Key}${aes_keylength}有誤，請${toastr_warning_keySet}`);
-            },1000);
+            toastr.info(`${aes_Key}${aes_keylength}有誤，請${toastr_warning_keySet}`);
             return;
         }
         toastr.success(`${aes_Key} 符合`);
@@ -341,23 +339,17 @@ function generateDetailIcon(linkareaDivTag){
             return;
         }else{
             if(keySet === ''){
-                setTimeout(() => {
-                    toastr.warning(`缺少${aes_Key}`);
-                },1000);
+                toastr.warning(`缺少${aes_Key}`);
             }else{
                 keyStr = await keyToString(keySet);
             }
             if(data === ''){
-                setTimeout(() => {
-                    toastr.warning(`缺少数据`);
-                },1000);
+                toastr.warning(`缺少数据`);
             }else{
                 encryptedData = data;
             }
             if(ivSet === ''){
-                setTimeout(() => {
-                    toastr.warning(`缺少${aes_IV}`);
-                },1000);
+                toastr.warning(`缺少${aes_IV}`);
             }else{
                 iv = arrayBufferToBase64(ivSet);
             }
@@ -393,7 +385,7 @@ function generateEncryptIcon(linkareaDivTag){
             [aes_Plaintext ,beforeEncrypt],
             [aes_Key ,keyStr],
             [aes_IV ,arrayBufferToBase64(iv)],
-            [aes_Plaintext ,arrayBufferToBase64(encryptedData)],
+            [aes_Ciphertext ,arrayBufferToBase64(encryptedData)],
         ])
 
         setTimeout(() => {
