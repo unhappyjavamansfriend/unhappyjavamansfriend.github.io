@@ -5,13 +5,14 @@ var isHome = false;
 var isExplainClicked = false;
 var isExampleClicked = false;
 var isTypeClicked = false;
+var isTestClicked = false;
 
 const class_message = 'message';
 const class_sent = 'sent';
 const class_usermessage = 'usermessage';
 const class_received = 'received';
 const class_canRemove = 'canRemove';
-const class_canCopy = 'canCopy';
+var class_canCopy = 'canCopy';
 const class_calculatorIcon = 'calculatorIcon';
 const class_codeIcon = 'codeIcon';
 const class_keyIcon = 'canCopyIcon';
@@ -50,6 +51,7 @@ const toastr_success_removeMessage = "對話已清除";
 const toastr_warning_removeMessage = "當前沒有對話";
 const dividingLine = `－－ － － －我是分隔線－ － － －－`;
 const toastr_success_unittest = "測試已生成";
+const toastr_warning_unittest = "當前已測試完畢" ;
 
 const linkGroup = [
     {//0
@@ -221,7 +223,7 @@ function initContainer(map ,isHome){
             () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
             () => common_type123(map.get('common_type123_received')) ,
             () => removeAllMessage(),
-            map.get('common_unittest_array')
+            () => common_unittest(map.get('common_unittest_array'))
         ]
     
         function_array.forEach((item ,index) => {
@@ -230,14 +232,7 @@ function initContainer(map ,isHome){
             const iconfunctionATag = document.createElement('a');
             iconfunctionATag.classList.add('icon-link');
             iconfunctionATag.innerHTML = icon_array[index];
-            if(index === 4){
-                iconfunctionATag.onclick = function () {
-                    item.forEach(e =>{ e() })
-                }
-                // toastr.success(toastr_success_unittest);
-            }else{
-                iconfunctionATag.onclick = function () {item() };
-            }
+            iconfunctionATag.onclick = function () {item() };
             linkareaDivTag.appendChild(iconfunctionATag);
         })
     
@@ -286,16 +281,36 @@ function sendMessage() {
     chatBody.appendChild(sentMessageDivTag);
 
     let resultMessageArray = resultMethod(messageText); // Sync execution
-    resultMessage = resultMessageArray[0]
-    copyMessage = resultMessageArray[1]
-    // console.log(resultMessage)
-    // console.log(copyMessage)
-    if(resultMessage === null || typeof resultMessage === 'undefined'){
-        toastr.warning(toastr_warning_errotMessage);
+    // console.log(`2d:${is2DArray(resultMessageArray)}`);
+    if(resultMessageArray !== null){
+        if(is2DArray(resultMessageArray)){
+            receivedMessage(dividingLine);
+            resultMessageArray.forEach(item =>{
+                receivedMessage(`${item[0]}：<br>${item[1]}` ,item[1]);
+            });
+            receivedMessage(dividingLine);
+            
+        }else{
+            resultMessage = resultMessageArray[0]
+            copyMessage = resultMessageArray[1]
+    
+            // console.log(resultMessage)
+            // console.log(copyMessage)
+            if(resultMessage === null || typeof resultMessage === 'undefined'){
+                receivedMessage(toastr_warning_errotMessage);
+            }else{
+                // console.log(`common sendMessage resultMessage=${resultMessage}`)
+                receivedMessage(resultMessage ,copyMessage);
+            }
+        }
     }else{
-        // console.log(`common sendMessage resultMessage=${resultMessage}`)
-        receivedMessage(resultMessage ,copyMessage);
+        receivedMessage(toastr_warning_errotMessage);
     }
+
+}
+
+function is2DArray(array) {
+    return Array.isArray(array) && array.every(item => Array.isArray(item));
 }
 
 var hiddenElementInteger = 0; 
@@ -404,6 +419,18 @@ function common_type123(receivedMessageArray){
     toastr.warning(toastr_warning_type);
 }
 
+function common_unittest(item){
+    if(!isTestClicked){
+        item.forEach(e =>{ e() })
+        setTimeout(() => {
+            toastr.success(toastr_success_unittest);
+        },1000);
+        isTestClicked = true;
+        return;
+    }
+    toastr.warning(toastr_warning_unittest);
+}
+
 function copyText(item){
     navigator.clipboard.writeText(item)
     .then(() => {
@@ -427,15 +454,7 @@ function removeAllMessage(){
     isExplainClicked = false;
     isExampleClicked = false;
     isTypeClicked = false;
-}
-
-// 生成多筆訊息
-function receivedMessageArray(array){
-    receivedMessage(dividingLine);
-    array.forEach(item =>{
-        receivedMessage(`${item[0]}：<br>${item[1]}` ,item[1]);
-    });
-    receivedMessage(dividingLine);
+    isTestClicked = false;
 }
 
 /** unittest */
@@ -460,15 +479,28 @@ function sendMessage_unittest(messageText) {
         
         let resultMessageArray = resultMethodWithConsolelog(messageText);
         
-        resultMessage = resultMessageArray[0]
-        copyMessage = resultMessageArray[1]
-        
-        
-        if(resultMessage === null || typeof resultMessage === 'undefined'){
-            receivedMessage(toastr_warning_errotMessage);
+        // console.log(`2d:${is2DArray(resultMessageArray)}`);
+        class_canCopy = 'cantCopy';
+        if(resultMessageArray !== null){
+            if(is2DArray(resultMessageArray)){
+                receivedMessage(dividingLine);
+                resultMessageArray.forEach(item =>{
+                    receivedMessage(`${item[0]}：<br>${item[1]}` ,item[1]);
+                });
+                receivedMessage(dividingLine);
+                
+            }else{
+                resultMessage = resultMessageArray[0]
+                // console.log(resultMessage)
+                if(resultMessage === null || typeof resultMessage === 'undefined'){
+                    receivedMessage(toastr_warning_errotMessage);
+                }else{
+                    // console.log(`common sendMessage resultMessage=${resultMessage}`)
+                    receivedMessage(resultMessage);
+                }
+            }
         }else{
-            // console.log(`common sendMessage resultMessage=${resultMessage}`)
-            receivedMessage(resultMessage ,copyMessage);
+            receivedMessage(toastr_warning_errotMessage);
         }
     },sendMessage_unittest_time);
     sendMessage_unittest_time += 1000;
