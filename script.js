@@ -12,6 +12,9 @@ const class_usermessage = 'usermessage';
 const class_received = 'received';
 const class_canRemove = 'canRemove';
 const class_canCopy = 'canCopy';
+const class_calculatorIcon = 'calculatorIcon';
+const class_codeIcon = 'codeIcon';
+const class_keyIcon = 'canCopyIcon';
 
 const copy_icon = '<i class="fa-solid fa-copy"></i> ';
 const hand_pointer_icon = '<i class="fas fa-hand-pointer"></i> ';
@@ -25,14 +28,15 @@ const explain_icon = '<i class="fa-solid fa-circle-info"></i>';
 const example_icon = '<i class="fa-solid fa-pen-nib"></i>';
 const type123_icon = '<i class="fa-solid fa-pen-to-square"></i>';
 const removeAllMessage_icon = '<i class="fa fa-trash"></i>';
+const unittest_icon = '<i class="fa-solid fa-vial-virus"></i>';
 
 const D_icon = '<i class="fa-solid fa-d"></i>';
 const E_icon = '<i class="fa-solid fa-e"></i>';
 const list_icon = '<i class="fa-solid fa-list"></i>';
-var toastr_success_encryptData = `加密成功`;
-var toastr_success_decryptData = `解密成功`;
-var toastr_warning_encryptData = `點選 ${E_icon} 進行加密`;
-var toastr_warning_decryptData = `點選 ${D_icon} 進行解密`;
+const toastr_success_encryptData = `加密成功`;
+const toastr_success_decryptData = `解密成功`;
+const toastr_warning_encryptData = `點選 ${E_icon} 進行加密`;
+const toastr_warning_decryptData = `點選 ${D_icon} 進行解密`;
 
 var toastr_warning_errotMessage = '無效輸入';
 
@@ -47,19 +51,79 @@ const toastr_warning_removeMessage = "當前沒有對話";
 const dividingLine = `－－ － － －我是分隔線－ － － －－`;
 const toastr_success_unittest = "測試已生成";
 
-var linkMap = new Map();
-linkMap.set("calculateArea" ,[calculator_icon,'無懼挑戰，精準換算公分與坪數！'])
-linkMap.set("convertHexadecimalToChinese" ,[code_icon,'字符解析大作戰，十六進制的全景探索！'])
-linkMap.set("convertUnicodeToChinese" ,[code_icon,'解編碼之謎，Unicode 揭開字符轉換的神秘面紗！'])
-linkMap.set("convertURLToChinese" ,[code_icon,'解密編碼世界，掌握字符解析 URL！'])
-linkMap.set("MD5" ,[key_icon,'不可逆的信任之鎖， MD5 數據校驗的極致力量！'])
-linkMap.set("AES" ,[key_icon,'閃電與鋼鐵的碰撞，AES-GCM 高速加密的無雙神器！'])
-linkMap.set("RSA" ,[key_icon,'數據的守護者，RSA-OAEP 非對稱加密的絕對防線！'])
+const linkGroup = [
+    {//0
+        key: "calculateArea",
+        value: [calculator_icon ,'無懼挑戰，精準換算公分與坪數！'],
+        classname: class_calculatorIcon
+    },
+    {
+        key: "convertHexadecimalToChinese",
+        value: [code_icon ,'字符解析大作戰，十六進制的全景探索！'],
+        classname: class_codeIcon
+    },
+    {
+        key: "convertUnicodeToChinese",
+        value: [code_icon ,'解編碼之謎，Unicode 揭開字符轉換的神秘面紗！'],
+        classname: class_codeIcon
+    },
+    {
+        key: "convertURLToChinese",
+        value: [code_icon ,'解密編碼世界，掌握字符解析 URL！'],
+        classname: class_codeIcon
+    },
+    {
+        key: "MD5",
+        value: [key_icon ,'不可逆的信任之鎖， MD5 數據校驗的極致力量！'],
+        classname: class_keyIcon
+    },
+    {//5
+        key: "AES",
+        value: [key_icon ,'閃電與鋼鐵的碰撞，AES-GCM 高速加密的無雙神器！'],
+        classname: class_keyIcon
+    },
+    {
+        key: "RSA",
+        value: [key_icon ,'數據的守護者，RSA-OAEP 非對稱加密的絕對防線！'],
+        classname: class_keyIcon
+    },
+]
 
-// map.forEach((value ,key) => {
-// console.log(key)
-// console.log(value)
-// })
+function home_icon(){
+    var iconArray = [
+        { 
+            icon: calculator_icon,
+            classname: class_calculatorIcon
+        },
+        { 
+            icon: code_icon,
+            classname: class_codeIcon
+        },
+        { 
+            icon: key_icon,
+            classname: class_keyIcon
+        }
+    ];
+    const linkareaDivTag = document.querySelector('.link-area');
+    iconArray.forEach(({icon ,classname}) => {
+        const iconfunctionATag = document.createElement('a');
+        iconfunctionATag.classList.add('icon-link');
+        iconfunctionATag.innerHTML = icon;
+        iconfunctionATag.onclick = function () {
+            const aTags = document.querySelectorAll(`.${classname}`);
+            aTags.forEach(aTag => {
+                // 切换每个元素的显示状态
+                if (aTag.style.display === "none") {
+                    aTag.style.display = "block"; // 显示
+                } else {
+                    aTag.style.display = "none";  // 隐藏
+                }
+            });
+        };
+        linkareaDivTag.appendChild(iconfunctionATag);
+    })
+}
+
 function common_header(titleTagValue ,isHome){
     /*<meta charset="UTF-8"></meta>
     const charsetMetaTag = document.createElement('meta');
@@ -151,20 +215,29 @@ function initContainer(map ,isHome){
         homeIconITag.classList.add('fas' ,'fa-home');
         homeIconATag.appendChild(homeIconITag);
         
-        var icon_array = [explain_icon ,example_icon ,type123_icon ,removeAllMessage_icon];
+        var icon_array = [explain_icon ,example_icon ,type123_icon ,removeAllMessage_icon ,unittest_icon];
         var function_array = [
             () => common_explain(map.get('common_explain_received')) ,
             () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
             () => common_type123(map.get('common_type123_received')) ,
-            () => removeAllMessage()
+            () => removeAllMessage(),
+            map.get('common_unittest_array')
         ]
     
         function_array.forEach((item ,index) => {
             if(!map.has('common_type123_received') && index === 2) return;
+            // if(!map.has('common_unittest_array') && index === 4) return;
             const iconfunctionATag = document.createElement('a');
             iconfunctionATag.classList.add('icon-link');
             iconfunctionATag.innerHTML = icon_array[index];
-            iconfunctionATag.onclick = function () {item() };
+            if(index === 4){
+                iconfunctionATag.onclick = function () {
+                    item.forEach(e =>{ e() })
+                }
+                // toastr.success(toastr_success_unittest);
+            }else{
+                iconfunctionATag.onclick = function () {item() };
+            }
             linkareaDivTag.appendChild(iconfunctionATag);
         })
     
@@ -182,10 +255,11 @@ function initContainer(map ,isHome){
         toolDivTag.innerHTML = `請依照個人需要， ${hand_pointer_icon} 點選下方相關標題`;
         chatBodyDivTag.appendChild(toolDivTag);
 
-        linkMap.forEach((value ,key) => {
+        linkGroup.forEach(({key ,value ,classname}) => {
             const toolDivTag = document.createElement('div');
-            toolDivTag.classList.add(class_message, class_received);
+            toolDivTag.classList.add(class_message, class_received , classname);
             toolDivTag.innerHTML = value[0];
+            toolDivTag.style.display = "none"; 
             chatBodyDivTag.appendChild(toolDivTag);
 
             const toolATag = document.createElement('a');
@@ -224,7 +298,6 @@ function sendMessage() {
     }
 }
 
-// 插到回覆框裡面隱藏，複製用
 var hiddenElementInteger = 0; 
 function hiddenElement(copyMessage ,receivedMessageDivTag){
     const hiddenElementDivTag = document.createElement('div');
@@ -331,7 +404,6 @@ function common_type123(receivedMessageArray){
     toastr.warning(toastr_warning_type);
 }
 
-
 function copyText(item){
     navigator.clipboard.writeText(item)
     .then(() => {
@@ -341,21 +413,21 @@ function copyText(item){
             toastr.warning('Failed to copy')
             console.error('Failed to copy: ', err);
         });
-    }
+}
     
-    function removeAllMessage(){
-        const chatBody = document.getElementById('chatBody');
-        if(chatBody.textContent === ''){
-            toastr.warning(toastr_warning_removeMessage);
-            return;
-        }
-        // 移除說明、範例、使用者對話內容
-        chatBody.textContent = '';
-        toastr.success(toastr_success_removeMessage);
-        isExplainClicked = false;
-        isExampleClicked = false;
-        isTypeClicked = false;
+function removeAllMessage(){
+    const chatBody = document.getElementById('chatBody');
+    if(chatBody.textContent === ''){
+        toastr.warning(toastr_warning_removeMessage);
+        return;
     }
+    // 移除說明、範例、使用者對話內容
+    chatBody.textContent = '';
+    toastr.success(toastr_success_removeMessage);
+    isExplainClicked = false;
+    isExampleClicked = false;
+    isTypeClicked = false;
+}
 
 // 生成多筆訊息
 function receivedMessageArray(array){
@@ -367,22 +439,6 @@ function receivedMessageArray(array){
 }
 
 /** unittest */
-
-function common_unittest_icon(functionArray){
-    const linkareaDivTag = document.querySelector('.link-area');
-    linkareaDivTag.appendChild(document.createElement('br'));
-    const iconATag = document.createElement('a');
-    iconATag.classList.add('icon-link');
-    iconATag.innerHTML = 'T';
-    iconATag.onclick = function () {
-        functionArray.forEach(item =>{ item })
-        setTimeout(() => {
-            toastr.success(toastr_success_unittest);
-        },1000);
-    };
-    linkareaDivTag.appendChild(iconATag);
-}
-
 let sendMessage_unittest_time = 1000;
 let sendMessage_unittest_count = 0;
 function sendMessage_unittest(messageText) {
