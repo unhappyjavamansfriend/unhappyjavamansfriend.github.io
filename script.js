@@ -45,7 +45,21 @@ const toastr_warning_type = "當前已有提示詞" ;
 const toastr_success_removeMessage = "對話已清除";
 const toastr_warning_removeMessage = "當前沒有對話";
 const dividingLine = `－－ － － －我是分隔線－ － － －－`;
+const toastr_success_unittest = "測試已生成";
 
+var linkMap = new Map();
+linkMap.set("calculateArea" ,[calculator_icon,'無懼挑戰，精準換算公分與坪數！'])
+linkMap.set("convertHexadecimalToChinese" ,[code_icon,'字符解析大作戰，十六進制的全景探索！'])
+linkMap.set("convertUnicodeToChinese" ,[code_icon,'解編碼之謎，Unicode 揭開字符轉換的神秘面紗！'])
+linkMap.set("convertURLToChinese" ,[code_icon,'解密編碼世界，掌握字符解析 URL！'])
+linkMap.set("MD5" ,[key_icon,'不可逆的信任之鎖， MD5 數據校驗的極致力量！'])
+linkMap.set("AES" ,[key_icon,'閃電與鋼鐵的碰撞，AES-GCM 高速加密的無雙神器！'])
+linkMap.set("RSA" ,[key_icon,'數據的守護者，RSA-OAEP 非對稱加密的絕對防線！'])
+
+// map.forEach((value ,key) => {
+// console.log(key)
+// console.log(value)
+// })
 function common_header(titleTagValue ,isHome){
     /*<meta charset="UTF-8"></meta>
     const charsetMetaTag = document.createElement('meta');
@@ -162,20 +176,22 @@ function initContainer(map ,isHome){
         linkareaDivTag.appendChild(titleDivTag);
 
     }else{
-        var titleArray = [`請依照個人需要， ${hand_pointer_icon} 點選下方相關標題`,
-                        `${calculator_icon}  <a href="calculateArea/index.html">無懼挑戰，精準換算公分與坪數！</a>`,
-                        `${code_icon}  <a href="convertHexadecimalToChinese/index.html">字符解析大作戰，十六進制的全景探索！</a>`,
-                        `${code_icon}  <a href="convertUnicodeToChinese/index.html">破解編碼之謎，Unicode 揭開字符轉換的神秘面紗！</a>`,
-                        `${code_icon}  <a href="convertURLToChinese/index.html">解密編碼世界，掌握字符解析 URL！</a>`,
-                        `${key_icon}  <a href="MD5/index.html">不可逆的信任之鎖， MD5 數據校驗的極致力量！</a>`,
-                        `${key_icon}  <a href="AES/index.html">閃電與鋼鐵的碰撞，AES 高速加密的無雙神器！</a>`,
-                        `${key_icon}  <a href="RSA/index.html">數據的守護者，RSA-OAEP 非對稱加密的絕對防線！</a>`,
-        ];
-        titleArray.forEach(item => {
+
+        const toolDivTag = document.createElement('div');
+        toolDivTag.classList.add(class_message, class_received);
+        toolDivTag.innerHTML = `請依照個人需要， ${hand_pointer_icon} 點選下方相關標題`;
+        chatBodyDivTag.appendChild(toolDivTag);
+
+        linkMap.forEach((value ,key) => {
             const toolDivTag = document.createElement('div');
             toolDivTag.classList.add(class_message, class_received);
-            toolDivTag.innerHTML = item;
+            toolDivTag.innerHTML = value[0];
             chatBodyDivTag.appendChild(toolDivTag);
+
+            const toolATag = document.createElement('a');
+            toolATag.href = key + '/index.html';
+            toolATag.innerHTML = value[1];
+            toolDivTag.appendChild(toolATag);
         })
     }
 }
@@ -196,10 +212,6 @@ function sendMessage() {
     chatBody.appendChild(sentMessageDivTag);
 
     let resultMessageArray = resultMethod(messageText); // Sync execution
-    // Scroll to the bottom of the chat body
-    chatBody.scrollTop = chatBody.scrollHeight;
-    
-    
     resultMessage = resultMessageArray[0]
     copyMessage = resultMessageArray[1]
     // console.log(resultMessage)
@@ -207,7 +219,8 @@ function sendMessage() {
     if(resultMessage === null || typeof resultMessage === 'undefined'){
         toastr.warning(toastr_warning_errotMessage);
     }else{
-        receivedMessage(resultMessage);
+        // console.log(`common sendMessage resultMessage=${resultMessage}`)
+        receivedMessage(resultMessage ,copyMessage);
     }
 }
 
@@ -233,6 +246,7 @@ function receivedMessage(messageText ,copyMessage){
         receivedMessageDivTag.classList.add(class_message, class_received ,class_canCopy+receivedInteger);
         receivedMessageDivTag.innerHTML = messageText;
         chatBody.appendChild(receivedMessageDivTag);
+        // console.log(`copyMessage=${copyMessage}`)
         if(typeof copyMessage !=='undefined'){
             hiddenElement(copyMessage.replaceAll('<br>','').replace(/[ \t\r]+/g, '') ,receivedMessageDivTag)
         }
@@ -317,35 +331,89 @@ function common_type123(receivedMessageArray){
     toastr.warning(toastr_warning_type);
 }
 
+
 function copyText(item){
     navigator.clipboard.writeText(item)
-        .then(() => {
-            toastr.success(`Content "${item}" copied to clipboard!`)
+    .then(() => {
+        toastr.success(`Content "${item}" copied to clipboard!`)
         })
         .catch(err => {
             toastr.warning('Failed to copy')
             console.error('Failed to copy: ', err);
         });
-}
-
-function removeAllMessage(){
-    const chatBody = document.getElementById('chatBody');
-    if(chatBody.textContent === ''){
-        toastr.warning(toastr_warning_removeMessage);
-        return;
     }
-    // 移除說明、範例、使用者對話內容
-    chatBody.textContent = '';
-    toastr.success(toastr_success_removeMessage);
-    isExplainClicked = false;
-    isExampleClicked = false;
-    isTypeClicked = false;
-}
+    
+    function removeAllMessage(){
+        const chatBody = document.getElementById('chatBody');
+        if(chatBody.textContent === ''){
+            toastr.warning(toastr_warning_removeMessage);
+            return;
+        }
+        // 移除說明、範例、使用者對話內容
+        chatBody.textContent = '';
+        toastr.success(toastr_success_removeMessage);
+        isExplainClicked = false;
+        isExampleClicked = false;
+        isTypeClicked = false;
+    }
 
+// 生成多筆訊息
 function receivedMessageArray(array){
     receivedMessage(dividingLine);
     array.forEach(item =>{
         receivedMessage(`${item[0]}：<br>${item[1]}` ,item[1]);
     });
     receivedMessage(dividingLine);
+}
+
+/** unittest */
+
+function common_unittest_icon(functionArray){
+    const linkareaDivTag = document.querySelector('.link-area');
+    linkareaDivTag.appendChild(document.createElement('br'));
+    const iconATag = document.createElement('a');
+    iconATag.classList.add('icon-link');
+    iconATag.innerHTML = 'T';
+    iconATag.onclick = function () {
+        functionArray.forEach(item =>{ item })
+        setTimeout(() => {
+            toastr.success(toastr_success_unittest);
+        },1000);
+    };
+    linkareaDivTag.appendChild(iconATag);
+}
+
+let sendMessage_unittest_time = 1000;
+let sendMessage_unittest_count = 0;
+function sendMessage_unittest(messageText) {
+    const chatBody = document.getElementById('chatBody');
+    setTimeout(() => {
+        if(sendMessage_unittest_count == 0){
+            setTimeout(() => {
+                const sentMessageDivTag = document.createElement('div');
+                sentMessageDivTag.classList.add(class_message, class_sent ,class_usermessage);
+                sentMessageDivTag.textContent = messageText;
+                chatBody.appendChild(sentMessageDivTag);
+            },1000);
+        }else{
+            const sentMessageDivTag = document.createElement('div');
+            sentMessageDivTag.classList.add(class_message, class_sent ,class_usermessage);
+            sentMessageDivTag.textContent = messageText;
+            chatBody.appendChild(sentMessageDivTag);
+        }
+        
+        let resultMessageArray = resultMethodWithConsolelog(messageText);
+        
+        resultMessage = resultMessageArray[0]
+        copyMessage = resultMessageArray[1]
+        
+        
+        if(resultMessage === null || typeof resultMessage === 'undefined'){
+            receivedMessage(toastr_warning_errotMessage);
+        }else{
+            // console.log(`common sendMessage resultMessage=${resultMessage}`)
+            receivedMessage(resultMessage ,copyMessage);
+        }
+    },sendMessage_unittest_time);
+    sendMessage_unittest_time += 1000;
 }

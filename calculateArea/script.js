@@ -1,6 +1,7 @@
-toastr_warning_errotMessage = '請輸入有效的長和寬數值，例如：300*400';
-titleMessage = `無懼挑戰：精準換算公分與坪數！`;
+titleMessage = linkMap.get('calculateArea')[1];
 common_header(titleMessage ,isHome);
+
+toastr_warning_errotMessage = '請輸入有效的長和寬數值，例如：300*400';
 
 const map = new Map();
 map.set(`title`,`${calculator_icon} ${titleMessage}`);
@@ -19,6 +20,7 @@ map.set(`common_example_received`,[`請輸入300*400`,`長：300 公分<br>
 initContainer(map ,isHome);
 
 function resultMethod(messageText){
+    // console.log(`message=${messageText}`)
     var resultMessage = null;
     var copyMessage = null;
     if (!messageText.includes("*")) {
@@ -26,19 +28,30 @@ function resultMethod(messageText){
     }
     
     const dimensions = messageText.split("*");
+
     if(dimensions.length > 2){
         return [resultMessage ,copyMessage];
     }
-    
-    // 检查是否有效的数字
-    if (isNaN(dimensions[0]) || isNaN(dimensions[1])) {
+
+    // console.log(`''=${dimensions[0]}`)
+    // console.log(`''=${dimensions[1]}`)
+    if (dimensions[0] === '' || dimensions[1] === '') {
         return [resultMessage ,copyMessage];
     }
     
     const length = parseFloat(dimensions[0]);
     const width = parseFloat(dimensions[1]);
     
+    // console.log(`length=${length}`)
+    // console.log(`width=${width}`)
     if(length <= 0 || width <= 0) {
+        return [resultMessage ,copyMessage];
+    }
+    
+    // 检查是否有效的数字
+    // console.log(`isNaN=${isNaN(length)}`)
+    // console.log(`isNaN=${isNaN(width)}`)
+    if (isNaN(length) || isNaN(width)) {
         return [resultMessage ,copyMessage];
     }
     
@@ -52,6 +65,67 @@ function resultMethod(messageText){
                 計算結果：${areaInPing.toFixed(4)} 坪`;
 
     copyMessage = `${areaInPing.toFixed(4)}坪`;
-
+    // console.log(`resultMessage=${copyMessage}`);
     return [resultMessage ,copyMessage];
 }
+
+
+/** test icon */
+
+function resultMethodWithConsolelog(messageText){
+    console.log(`${dividingLine}`);
+    console.log(`message=${messageText}`)
+    var resultMessage = null;
+    var copyMessage = null;
+    if (!messageText.includes("*")) {
+        return [resultMessage ,copyMessage];
+    }
+    
+    const dimensions = messageText.split("*");
+
+    if(dimensions.length > 2){
+        return [resultMessage ,copyMessage];
+    }
+
+    console.log(`''=${dimensions[0]}`)
+    console.log(`''=${dimensions[1]}`)
+    if (dimensions[0] === '' || dimensions[1] === '') {
+        return [resultMessage ,copyMessage];
+    }
+    
+    const length = parseFloat(dimensions[0]);
+    const width = parseFloat(dimensions[1]);
+    
+    console.log(`length=${length}`)
+    console.log(`width=${width}`)
+    if(length <= 0 || width <= 0) {
+        return [resultMessage ,copyMessage];
+    }
+    
+    // 检查是否有效的数字
+    console.log(`isNaN=${isNaN(length)}`)
+    console.log(`isNaN=${isNaN(width)}`)
+    if (isNaN(length) || isNaN(width)) {
+        return [resultMessage ,copyMessage];
+    }
+    
+    const areaInSquareCm = length * width;
+    const areaInSquareMeters = areaInSquareCm / 10000;
+    const areaInPing = areaInSquareMeters / 3.305785;
+    // Simulate receiving a reply after a delay
+    
+    resultMessage = `長：${length} 公分<br>
+                寬：${width} 公分<br> 
+                計算結果：${areaInPing.toFixed(4)} 坪`;
+
+    copyMessage = `${areaInPing.toFixed(4)}坪`;
+    console.log(`resultMessage=${copyMessage}`);
+    return [resultMessage ,copyMessage];
+}
+    
+common_unittest_icon([
+    sendMessage_unittest(' *123'),
+    sendMessage_unittest('123*asd'),
+    sendMessage_unittest('asd*123'),
+    sendMessage_unittest('123*123')
+]);
