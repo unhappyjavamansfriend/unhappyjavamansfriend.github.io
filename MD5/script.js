@@ -7,8 +7,9 @@ var beforeStr = '加密前字串';
 var afterMD5 = 'MD5加密後';
 
 const map = new Map();
+map.set(`emailSubject`,titleMessage);
 map.set(`title`,`${key_icon} ${titleMessage}`);
-map.set(`common_explain_received`,[`MD5訊息摘要演算法（英語：MD5 Message-Digest Algorithm），一種被廣泛使用的密碼雜湊函數，可以產生出一個128位元（16位元組）的散列值（hash value），用於確保信息傳輸完整一致。MD5由羅納德·李維斯特設計，於1992年公開，用以取代MD4演算法。這套演算法的程序在 RFC 1321 中被加以規範。
+map.set(`common_intro_received`,[`MD5訊息摘要演算法（英語：MD5 Message-Digest Algorithm），一種被廣泛使用的密碼雜湊函數，可以產生出一個128位元（16位元組）的散列值（hash value），用於確保信息傳輸完整一致。MD5由羅納德·李維斯特設計，於1992年公開，用以取代MD4演算法。這套演算法的程序在 RFC 1321 中被加以規範。
     將數據（如一段文字）運算變為另一固定長度值，是雜湊算法的基礎原理。`]);
 map.set(`common_example_sent`,['qwe123' ,`${messageTextArray[0]}@@qwe123`]);
 map.set(`common_example_received`,[`${messageTextArray[0]}：<br> 200820E3227815ED1756A6B531E7E0D2<br>

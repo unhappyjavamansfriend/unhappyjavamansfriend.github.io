@@ -5,8 +5,9 @@ common_header(titleMessage ,isHome);
 toastr_warning_errotMessage = '請輸入有效的長和寬數值，例如：300*400';
 
 const map = new Map();
+map.set(`emailSubject`,titleMessage);
 map.set(`title`,`${calculator_icon} ${titleMessage}`);
-map.set(`common_explain_received`,[`坪是一種常用的面積單位<br>1 坪等於 3.305785 平方公尺`,
+map.set(`common_intro_received`,[`坪是一種常用的面積單位<br>1 坪等於 3.305785 平方公尺`,
     `範例：<br>
     長：300 公分<br>
     寬：400 公分<br>
@@ -35,29 +36,29 @@ function resultMethod(messageText){
     var resultMessage = null;
     var copyMessage = null;
     if (!messageText.includes("*")) {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     const dimensions = messageText.split("*");
 
     if(dimensions.length > 2){
-        return [resultMessage ,copyMessage];
+        return null;
     }
 
     if (dimensions[0] === '' || dimensions[1] === '') {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     const length = parseFloat(dimensions[0]);
     const width = parseFloat(dimensions[1]);
     
     if(length <= 0 || width <= 0) {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     // 检查是否有效的数字
     if (isNaN(length) || isNaN(width)) {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     const areaInSquareCm = length * width;
@@ -82,19 +83,19 @@ function resultMethodWithConsolelog(messageText){
     var resultMessage = null;
     var copyMessage = null;
     if (!messageText.includes("*")) {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     const dimensions = messageText.split("*");
 
     if(dimensions.length > 2){
-        return [resultMessage ,copyMessage];
+        return null;
     }
 
     console.log(`''=${dimensions[0]}`)
     console.log(`''=${dimensions[1]}`)
     if (dimensions[0] === '' || dimensions[1] === '') {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     const length = parseFloat(dimensions[0]);
@@ -103,14 +104,14 @@ function resultMethodWithConsolelog(messageText){
     console.log(`length=${length}`)
     console.log(`width=${width}`)
     if(length <= 0 || width <= 0) {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     // 检查是否有效的数字
     console.log(`isNaN=${isNaN(length)}`)
     console.log(`isNaN=${isNaN(width)}`)
     if (isNaN(length) || isNaN(width)) {
-        return [resultMessage ,copyMessage];
+        return null;
     }
     
     const areaInSquareCm = length * width;
