@@ -17,14 +17,17 @@ const class_canRemove = 'canRemove';
 var class_canCopy = 'canCopy';
 const class_calculatorIcon = 'calculatorIcon';
 const class_codeIcon = 'codeIcon';
-const class_keyIcon = 'canCopyIcon';
+const class_keyIcon = 'keyIcon';
+const class_qrcodeIcon = 'qrcodeIcon';
 
 const copy_icon = '<i class="fa-solid fa-copy"></i> ';
 const hand_pointer_icon = '<i class="fas fa-hand-pointer"></i> ';
+const download_icon = '<i class="fa-solid fa-download"></i> ';
 
 const calculator_icon = '<i class="fa-solid fa-calculator"></i>';
 const code_icon = '<i class="fa-solid fa-code"></i>';
 const key_icon = '<i class="fa fa-key"></i>';
+const qrcode_icon = '<i class="fa-solid fa-qrcode"></i>';
 
 const comment_icon = '<i class="fa-solid fa-mug-hot"></i>';
 const intro_icon = '<i class="fa-solid fa-circle-info"></i>';
@@ -44,6 +47,7 @@ const toastr_warning_decryptData = `點選 ${D_icon} 進行解密`;
 
 var toastr_warning_errotMessage = '無效輸入';
 
+const download_icon_note = "下載";
 const copy_icon_note = "複製內容";
 const comment_icon_note = "圖示說明";
 const intro_icon_note = "知識點";
@@ -57,8 +61,8 @@ const toastr_success_comment = "圖示說明已生成";
 const toastr_warning_comment = "當前已有圖示說明";
 const toastr_success_intro = "本篇知識點已生成";
 const toastr_warning_intro = "當前已有知識點";
-const toastr_success_example = "範例已生成";
-const toastr_warning_example = "當前已有範例";
+// const toastr_success_example = "範例已生成";
+// const toastr_warning_example = "當前已有範例";
 const toastr_success_type = `關鍵詞已生成，${hand_pointer_icon} 點選該關鍵詞可複製內容` ;
 const toastr_warning_type = "當前已有關鍵詞" ;
 const toastr_success_removeMessage = "對話已清除";
@@ -82,7 +86,7 @@ const linkGroup = [
     },
     {
         key: "convertUnicodeToChinese",
-        value: [code_icon ,'解編碼之謎，Unicode 揭開字符轉換的神秘面紗！'],
+        value: [code_icon ,'Unicode 揭開字符轉換的神秘面紗！'],
         classname: class_codeIcon
     },
     {
@@ -104,6 +108,11 @@ const linkGroup = [
         key: "RSA",
         value: [key_icon ,'數據的守護者，RSA-OAEP 非對稱加密的絕對防線！'],
         classname: class_keyIcon
+    },
+    {
+        key: "qrcode",
+        value: [qrcode_icon ,'連接世界的橋樑，QR Code 數位化未來的象徵！'],
+        classname: class_qrcodeIcon
     },
 ]
 
@@ -129,7 +138,11 @@ function home_icon(){
         { 
             icon: key_icon,
             classname: class_keyIcon
-        }
+        },
+        { 
+            icon: qrcode_icon,
+            classname: class_qrcodeIcon
+        },
     ];
     const linkareaDivTag = document.querySelector('.link-area');
     iconArray.forEach(({icon ,classname}) => {
@@ -246,31 +259,32 @@ function initContainer(map ,isHome){
         var icon_array = [
             [comment_icon ,comment_icon_note] ,
             [intro_icon ,intro_icon_note] ,
-            [example_icon ,example_icon_note] ,
+            [example_icon ,unittest_icon_note] ,
+            // [example_icon ,example_icon_note] ,
             [type123_icon ,type_icon_note] ,
             [removeAllMessage_icon ,removeMessage_icon_note] ,
-            [unittest_icon ,unittest_icon_note] ,
             [email_icon ,email_icon_note]
         ];
 
         var function_array = [
             () => common_comment() ,
             () => common_intro(map.get('common_intro_received')) ,
-            () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
+            () => common_unittest(map.get('common_unittest_array')),
+            // () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
             () => common_type123(map.get('common_type123_received')) ,
             () => removeAllMessage(),
-            () => common_unittest(map.get('common_unittest_array')),
             (tag) => common_email(map.get('emailSubject'), tag)
         ]
 
         function_array.forEach((item ,index) => {
+            // if((!map.has('common_example_sent') && !map.has('common_example_received'))
+            //      && index === 2) return;
             if(!map.has('common_type123_received') && index === 3) return;
-            // if(!map.has('common_unittest_array') && index === 5) return;
             const iconfunctionATag = document.createElement('a');
             iconfunctionATag.classList.add('icon-link');
             iconfunctionATag.innerHTML = icon_array[index][0];
             iconfunctionATag.onclick = function () {
-                if( index === 6){ //mail
+                if( index === 5){ //mail
                     item(iconfunctionATag)
                 }else{
                     item()
@@ -299,7 +313,7 @@ function initContainer(map ,isHome){
 
             const toolATag = document.createElement('a');
             toolATag.href = key + '/index.html';
-            toolATag.innerHTML = value[1];
+            toolATag.innerHTML = ` ${value[1]}`;
             divTag.appendChild(toolATag);
         })
     }
@@ -444,27 +458,27 @@ function common_intro(r_commonArray){
     toastr.warning(toastr_warning_intro);
 }
 
-function common_example(s_commonArray ,r_commonArray ){
-    if(!isExampleClicked 
-        && (s_commonArray !== null || r_commonArray !== null)
-        && (typeof s_commonArray !== 'undefined' || typeof r_commonArray !== 'undefined')
-    ){
-        s_commonArray.forEach((item, index) => {
-            if(!/^\s*$/.test(item) && item !== null){
-                messageSystem(item ,messageClassArray[1]);
-            }
+// function common_example(s_commonArray ,r_commonArray ){
+//     if(!isExampleClicked 
+//         && (s_commonArray !== null || r_commonArray !== null)
+//         && (typeof s_commonArray !== 'undefined' || typeof r_commonArray !== 'undefined')
+//     ){
+//         s_commonArray.forEach((item, index) => {
+//             if(!/^\s*$/.test(item) && item !== null){
+//                 messageSystem(item ,messageClassArray[1]);
+//             }
 
-            var item2 = r_commonArray[index];
-            if(!/^\s*$/.test(item2) && item2 !== null){
-                messageSystem(item2);
-            }
-        })
-        isExampleClicked = true;
-        toastr.success(toastr_success_example);
-        return;
-    }
-    toastr.warning(toastr_warning_example);
-}
+//             var item2 = r_commonArray[index];
+//             if(!/^\s*$/.test(item2) && item2 !== null){
+//                 messageSystem(item2);
+//             }
+//         })
+//         isExampleClicked = true;
+//         toastr.success(toastr_success_example);
+//         return;
+//     }
+//     toastr.warning(toastr_warning_example);
+// }
 
 function common_type123(r_commonArray){
     if(!isTypeClicked 
@@ -551,7 +565,8 @@ function sendMessage_unittest(messageText) {
     setTimeout(() => {
         messageSystem(messageText ,messageClassArray[1])
         
-        let resultMessageArray = resultMethodWithConsolelog(messageText);
+        // let resultMessageArray = resultMethodWithConsolelog(messageText);
+        let resultMessageArray = resultMethod(messageText);
         
         // console.log(`2d:${is2DArray(resultMessageArray)}`);
         class_canCopy = 'cantCopy';
