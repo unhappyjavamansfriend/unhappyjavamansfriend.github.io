@@ -1,4 +1,5 @@
-titleMessage = `閃電與鋼鐵的碰撞，AES-GCM 高速加密的無雙神器！`;
+const { key, value ,classname } = linkGroup[5];
+titleMessage = value[1];
 common_header(titleMessage ,isHome);
 
 var aes_keylength = '密钥长度';
@@ -10,8 +11,9 @@ var aes_Ciphertext = '密文数据（Ciphertext）';
 var toastr_warning_keySet = `點選128 / 256 生成${aes_Key}`;
 
 const map = new Map();
+map.set(`emailSubject`,titleMessage);
 map.set(`title`,`${key_icon} ${titleMessage}`);
-map.set(`common_explain_received`,[`進階加密標準（英語：Advanced Encryption Standard，縮寫：AES），又稱Rijndael加密法（荷蘭語發音：[ˈrɛindaːl]，音似英文的「Rhine doll」），是美國聯邦政府採用的一種區塊加密標準。這個標準用來替代原先的DES，已經被多方分析且廣為全世界所使用。經過五年的甄選流程，進階加密標準由美國國家標準與技術研究院（NIST）於2001年11月26日發佈於FIPS PUB 197，並在2002年5月26日成為有效的標準。現在，進階加密標準已然成為對稱金鑰加密中最流行的演算法之一。`,
+map.set(`common_intro_received`,[`進階加密標準（英語：Advanced Encryption Standard，縮寫：AES），又稱Rijndael加密法（荷蘭語發音：[ˈrɛindaːl]，音似英文的「Rhine doll」），是美國聯邦政府採用的一種區塊加密標準。這個標準用來替代原先的DES，已經被多方分析且廣為全世界所使用。經過五年的甄選流程，進階加密標準由美國國家標準與技術研究院（NIST）於2001年11月26日發佈於FIPS PUB 197，並在2002年5月26日成為有效的標準。現在，進階加密標準已然成為對稱金鑰加密中最流行的演算法之一。`,
     `加密所需的数据<br>
     必需的数据：<br>
     1. 明文数据（Plaintext）：<br>
@@ -75,9 +77,37 @@ map.set(`common_type123_received` ,[`key@@`,`iv@@`,`encryptedData@@`]);
 initContainer(map ,isHome);
 addIcon();
 
-var keySet = '';
-var ivSet = ''
-var data = '';
+var keyObj = '';
+var ivObj = ''
+var ciphertextObj = '';
+
+var keyStr = '';
+var ivStr = ''
+var plaintextStr = '';
+var ciphertextStr = '';
+
+let toastrArray = [
+    [aes_Plaintext ,plaintextStr],
+    [aes_Ciphertext ,ciphertextStr],
+    [aes_Key ,keyStr],
+    [aes_IV ,ivStr]
+];
+
+function consoleLog(){
+
+    console.log(`--------------------- start`)
+    console.log(`keyObj:${keyObj}`)
+    console.log(`ivObj:${ivObj}`)
+    console.log(`ciphertextObj:${ciphertextObj}`)
+
+    console.log(`---------------------`)
+    
+    console.log(`keyStr:${keyStr}`)
+    console.log(`ivStr:${ivStr}`)
+    console.log(`plaintextStr:${plaintextStr}`)
+    console.log(`ciphertextStr:${ciphertextStr}`)
+    console.log(`--------------------- end`)
+}
 
 /**aes basic function start*/
 
@@ -219,65 +249,69 @@ async function sendMessage() {
     if (messageText === '') return;
     
     // Create a new message bubble for the sent message
-    const sentMessageDivTag = document.createElement('div');
-    sentMessageDivTag.classList.add(class_message, class_sent ,class_usermessage);
-    sentMessageDivTag.textContent = messageText;
-    chatBody.appendChild(sentMessageDivTag);
+    messageClassArray[1].push(class_usermessage)
+    messageSystem(messageText ,messageClassArray[1]);
+    messageClassArray[1].pop();
 
     // Scroll to the bottom of the chat body
     chatBody.scrollTop = chatBody.scrollHeight;
     
-    if(messageText.includes("@@")){
-        if(messageText.split(splitVar).length > 2){
-            toastr.warning(toastr_warning_errotMessage);
-            return;
-        }
+    if(messageText.includes("@@") && messageText.split(splitVar).length > 2){
+        return null;
+    }
+
+    if(keyObj !== '' && plaintextStr !== ''){
+        toastr.info(toastr_warning_encryptData);
+    }else if(keyObj !== '' && ciphertextObj !== '' && ivObj !== ''){
+        toastr.info(toastr_warning_decryptData);
     }
 
     if(messageText.includes("key@@")){
-        const keyStr = messageText.split(splitVar)[1];
-        if(keyStr === ''){
+        keyStr = messageText.split(splitVar)[1];
+        toastrArray[2][1] = keyStr;
+        if(keyStr === '' || keyStr === null){
             toastr.warning(`缺少${aes_Key}`);
             return;
         }
-        keySet = await stringToKey(keyStr ,'stringToKey');
-        if(keySet === null){
+        keyObj = await stringToKey(keyStr ,'stringToKey');
+        if(keyObj === null){ // try catch error throws null
             toastr.info(`${aes_Key}${aes_keylength}有誤，請${toastr_warning_keySet}`);
             return;
         }
         toastr.success(`${aes_Key} 符合`);
-    }else if(messageText.includes("encryptedData@@")){
-        const encryptedData = messageText.split(splitVar)[1];
-        if(encryptedData === ''){
+        return;
+    } 
+
+    if(messageText.includes("ciphertext@@")){
+        ciphertextStr = messageText.split(splitVar)[1];
+        toastrArray[1][1] = ciphertextStr;
+        if(ciphertextStr === ''){
             toastr.warning(`缺少${aes_Ciphertext}`);
             return;
         }
-        data = Uint8Array.from(atob(encryptedData), c => c.charCodeAt(0)); 
-        data = encryptedData;
-    }else if(messageText.includes("iv@@")){
-        let iv = messageText.split(splitVar)[1];
-        if(iv === ''){
+        ciphertextObj = Uint8Array.from(atob(ciphertextStr), c => c.charCodeAt(0)); 
+        return;
+    }
+
+    if(messageText.includes("iv@@")){
+        ivStr = messageText.split(splitVar)[1];
+        toastrArray[3][1] = ivStr;
+        if(ivStr === '' || ivStr === null){
             toastr.warning(`缺少${aes_IV}`);
             return;
         }
-        iv = base64ToArrayBuffer(iv); 
-        if(iv === null){
-            return;
-        }else{
-            ivSet = iv;
-        }
-    }else{
-        data = messageText;
+        ivObj = base64ToArrayBuffer(ivStr);
+        return;
     }
-    
-    if(keySet !== '' && data !== ''){
-        toastr.info(`可${toastr_warning_encryptData}<br>或${toastr_warning_decryptData}`);
-    }
+
+    plaintextStr = messageText;
+    toastrArray[0][1] = plaintextStr;
+    consoleLog()
 }
 
 /**icon html start*/
 
-async function addIcon(){
+function addIcon(){
     const linkareaDivTag = document.querySelector('.link-area');
     linkareaDivTag.appendChild(document.createElement('br'));
     generateKeyIcon(linkareaDivTag);
@@ -294,17 +328,14 @@ function generateKeyIcon(linkareaDivTag){
         iconATag.classList.add('icon-link');
         iconATag.innerHTML = item;
         iconATag.onclick = async function () {
-            const key = await generateGCMKey(item);
-            const keyStr = await keyToString(key);
-            copyMessage = `${aes_keylength}：<br>${item}<br>key：<br>${keyStr}`
-            receivedMessage(copyMessage ,keyStr);
-            keySet = key;
+            keyObj = await generateGCMKey(item);
+            keyStr = await keyToString(keyObj);
+            toastrArray[2][1] = keyStr;
+            receivedMessage(`${aes_keylength}：<br>${item}<br>key：<br>${keyStr}` ,keyStr);
             setTimeout(() => {
                 toastr.success(`${aes_Key}已生成`);
-                if(keySet !== '' && data !== ''){
-                    toastr.info(`可${toastr_warning_encryptData}<br>或${toastr_warning_decryptData}`);
-                }
             },1000);
+            consoleLog()
         };
         linkareaDivTag.appendChild(iconATag);
     })
@@ -314,14 +345,16 @@ function generateIVIcon(linkareaDivTag){
     const iconATag = document.createElement('a');
     iconATag.classList.add('icon-link');
     iconATag.innerHTML = `IV`;
-    iconATag.onclick = async function () {
-        const iv = crypto.getRandomValues(new Uint8Array(12));
-        copyMessage = `IV：<br>${arrayBufferToBase64(iv)}`
-        receivedMessage(copyMessage ,arrayBufferToBase64(iv));
-        ivSet = iv;
+    iconATag.onclick = function () {
+        ivObj = crypto.getRandomValues(new Uint8Array(12));
+        ivStr = arrayBufferToBase64(ivObj);
+        toastrArray[3][1] = ivStr;
+
+        receivedMessage(`IV：<br>${ivStr}` ,ivStr);
         setTimeout(() => {
             toastr.success(`${aes_IV}已生成`);
         },1000);
+        consoleLog()
     };
     linkareaDivTag.appendChild(iconATag);
 }
@@ -330,42 +363,38 @@ function generateDetailIcon(linkareaDivTag){
     const iconATag = document.createElement('a');
     iconATag.classList.add('icon-link');
     iconATag.innerHTML = list_icon;
-    iconATag.onclick = async function () {
-        let encryptedData = '';
-        let iv = '';
-        let keyStr = '';
-        if(keySet === '' && data === '' && ivSet === ''){
-            toastr.info(`該功能可顯示當前${aes_Key}、数据、${aes_IV}`);
-            return;
-        }else{
-            if(keySet === ''){
-                toastr.warning(`缺少${aes_Key}`);
-            }else{
-                keyStr = await keyToString(keySet);
-            }
-            if(data === ''){
-                toastr.warning(`缺少数据`);
-            }else{
-                encryptedData = data;
-            }
-            if(ivSet === ''){
-                toastr.warning(`缺少${aes_IV}`);
-            }else{
-                iv = arrayBufferToBase64(ivSet);
-            }
-
-            receivedMessageArray([
-                ['数据' ,encryptedData],
-                [aes_Key ,keyStr],
-                [aes_IV ,iv],
-            ])
-
-            setTimeout(() => {
-                toastr.success(`已顯示當前${aes_Key}、数据、${aes_IV}`);
-            },1000);
-        }
+    iconATag.onclick = function () {
+        aesForeach();
+        // consoleLog()
     };
     linkareaDivTag.appendChild(iconATag);
+}
+
+
+function aesForeach(isCheckData){
+    console.log(`isCheckData:${isCheckData}`)
+    if(typeof isCheckData === 'undefined'){
+        toastrArray.forEach(item => {
+            const key = item[0];
+            const value = item[1];
+            if(value === ''){
+                toastr.warning(`缺少${key}`);
+                return;
+            }
+            receivedMessage(`${key}：<br>${value}` ,value);
+        });
+        return;
+    }
+    toastrArray.forEach((item ,index) =>{
+        if(isCheckData === 'Encrypt' && index === 1) return;
+        if(isCheckData === 'Decrypt' && index === 0) return;
+        const key = item[0];
+        const value = item[1];
+        if(value === ''){
+            toastr.warning(`缺少${key}`);
+            return null;
+        }
+    });
 }
 
 function generateEncryptIcon(linkareaDivTag){
@@ -373,24 +402,22 @@ function generateEncryptIcon(linkareaDivTag){
     iconATag.classList.add('icon-link');
     iconATag.innerHTML = E_icon;
     iconATag.onclick = async function () {
-        if(checkData(false) === null) return;
+        if(aesForeach('Encrypt') === null) return;
 
-        const beforeEncrypt = data;
-        const { encryptedData, iv } = await encryptData(keySet, data);
-        data = arrayBufferToBase64(encryptedData);
-        ivSet = iv;
-        const keyStr = await keyToString(keySet);
+        const { encryptedData, iv } = await encryptData(keyObj, plaintextStr);
+        ciphertextObj = encryptedData;
+        ciphertextStr = arrayBufferToBase64(encryptedData);
+        toastrArray[1][1] = ciphertextStr;
+        ivObj = iv;
+        ivStr = arrayBufferToBase64(iv);
+        toastrArray[3][1] = ivStr;
 
-        receivedMessageArray([
-            [aes_Plaintext ,beforeEncrypt],
-            [aes_Key ,keyStr],
-            [aes_IV ,arrayBufferToBase64(iv)],
-            [aes_Ciphertext ,arrayBufferToBase64(encryptedData)],
-        ])
+        aesForeach();
 
         setTimeout(() => {
             toastr.success(toastr_success_encryptData);
         },1000);
+        consoleLog()
     };
     linkareaDivTag.appendChild(iconATag);
 }
@@ -400,70 +427,18 @@ function generateDecryptIcon(linkareaDivTag){
     iconATag.classList.add('icon-link');
     iconATag.innerHTML = D_icon;
     iconATag.onclick = async function () {
-        if(checkData(true) === null) return;
-        
-        const beforeDecrypt = data;
-        const encryptedData = Uint8Array.from(atob(data), c => c.charCodeAt(0)); 
-        const decryptedData = await decryptData(keySet, encryptedData, ivSet);
-        if(typeof decryptedData !== 'undefined'){
-            data = decryptedData;
-            const keyStr = await keyToString(keySet);
+        if(aesForeach('Decrypt') === null) return;
 
-            receivedMessageArray([
-                [aes_Ciphertext ,beforeDecrypt],
-                [aes_Key ,keyStr],
-                [aes_IV ,arrayBufferToBase64(ivSet)],
-                [aes_Plaintext ,decryptedData],
-            ])
+        plaintextStr = await decryptData(keyObj, ciphertextObj, ivObj);
+        toastrArray[0][1] = plaintextStr;
 
+        if(typeof plaintextStr !== 'undefined'){
+            aesForeach();
             setTimeout(() => {
                 toastr.success(toastr_success_decryptData);
             },1000);
+            consoleLog()
         }
     };
     linkareaDivTag.appendChild(iconATag);
-}
-
-function checkData(isDecrypt){
-    if(isDecrypt){
-        if(keySet === '' && data === '' && ivSet === ''){
-            toastr.warning(`缺少${aes_Key}`);
-            toastr.warning(`缺少${aes_Ciphertext}`);
-            toastr.warning(`缺少${aes_IV}`);
-            return null;
-        }else if(keySet === '' && data === ''){
-            toastr.warning(`缺少${aes_Key}`);
-            toastr.warning(`缺少${aes_Ciphertext}`);
-            return null;
-        }else if(keySet === '' && ivSet === ''){
-            toastr.warning(`缺少${aes_Key}`);
-            toastr.warning(`缺少${aes_IV}`);
-            return null;
-        }else if(data === '' && ivSet === ''){
-            toastr.warning(`缺少${aes_Ciphertext}`);
-            toastr.warning(`缺少${aes_IV}`);
-            return null;
-        }else if(keySet === ''){
-            toastr.warning(`缺少${aes_Key}`);
-            return null;
-        }else if(data === ''){
-            toastr.warning(`缺少${aes_Ciphertext}`);
-            return null;
-        }else if(ivSet === ''){
-            toastr.warning(`缺少${aes_IV}`);
-            return null;
-        }
-    }else{
-        if(keySet === '' && data === ''){
-            toastr.warning(`缺少${aes_Key}`);
-            toastr.warning(`缺少${aes_Plaintext}`);
-            return null;
-        }else if(keySet === ''){
-            toastr.warning(`缺少${aes_Key}`);
-            return null;
-        }else if(data === ''){
-            toastr.warning(`缺少${aes_Plaintext}`);
-            return null;
-        }
-    }
 }
