@@ -3,6 +3,7 @@ var splitVar = "@@";
 var isHome = false;
 
 var isCommentClicked = false;
+var isOperateClicked = false;
 var isIntroClicked = false;
 var isExampleClicked = false;
 var isTypeClicked = false;
@@ -30,6 +31,7 @@ const key_icon = '<i class="fa fa-key"></i>';
 const qrcode_icon = '<i class="fa-solid fa-qrcode"></i>';
 
 const comment_icon = '<i class="fa-solid fa-mug-hot"></i>';
+const operate_icon = '<i class="fa-solid fa-comment"></i>';
 const intro_icon = '<i class="fa-solid fa-circle-info"></i>';
 const example_icon = '<i class="fa-solid fa-pen-nib"></i>';
 const type123_icon = '<i class="fa-solid fa-pen-to-square"></i>';
@@ -59,6 +61,8 @@ const email_icon_note = "反饋問題";
 
 const toastr_success_comment = "圖示說明已生成";
 const toastr_warning_comment = "當前已有圖示說明";
+const toastr_success_operate = "操作已生成";
+const toastr_warning_operate = "當前已有操作說明";
 const toastr_success_intro = "本篇知識點已生成";
 const toastr_warning_intro = "當前已有知識點";
 // const toastr_success_example = "範例已生成";
@@ -116,6 +120,26 @@ const linkGroup = [
     },
 ]
 
+let icon_array = [
+    [comment_icon ,comment_icon_note] ,
+    [intro_icon ,intro_icon_note] ,
+    [example_icon ,unittest_icon_note] ,
+    // [example_icon ,example_icon_note] ,
+    [type123_icon ,type_icon_note] ,
+    [removeAllMessage_icon ,removeMessage_icon_note] ,
+    [email_icon ,email_icon_note]
+];
+
+let function_array = [
+    () => common_comment() ,
+    () => common_intro(map.get('common_intro_received')) ,
+    () => common_unittest(map.get('common_unittest_array')),
+    // () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
+    () => common_type123(map.get('common_type123_received')) ,
+    () => removeAllMessage(),
+    (tag) => common_email(map.get('emailSubject'), tag)
+]
+
 let messageClassArray = [
     [class_message ,class_received],
     [class_message ,class_sent],
@@ -125,8 +149,8 @@ let messageClassArray = [
 
 let sendMessage_unittest_time = 1000;
 
-function home_icon(){
-    var iconArray = [
+function generateHomeIcon(){
+    const array = [
         { 
             icon: calculator_icon,
             classname: class_calculatorIcon
@@ -145,7 +169,7 @@ function home_icon(){
         },
     ];
     const linkareaDivTag = document.querySelector('.link-area');
-    iconArray.forEach(({icon ,classname}) => {
+    array.forEach(({icon ,classname}) => {
         const iconfunctionATag = document.createElement('a');
         iconfunctionATag.classList.add('icon-link');
         iconfunctionATag.innerHTML = icon;
@@ -256,26 +280,6 @@ function initContainer(map ,isHome){
         homeIconITag.classList.add('fas' ,'fa-home');
         homeIconATag.appendChild(homeIconITag);
         
-        var icon_array = [
-            [comment_icon ,comment_icon_note] ,
-            [intro_icon ,intro_icon_note] ,
-            [example_icon ,unittest_icon_note] ,
-            // [example_icon ,example_icon_note] ,
-            [type123_icon ,type_icon_note] ,
-            [removeAllMessage_icon ,removeMessage_icon_note] ,
-            [email_icon ,email_icon_note]
-        ];
-
-        var function_array = [
-            () => common_comment() ,
-            () => common_intro(map.get('common_intro_received')) ,
-            () => common_unittest(map.get('common_unittest_array')),
-            // () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
-            () => common_type123(map.get('common_type123_received')) ,
-            () => removeAllMessage(),
-            (tag) => common_email(map.get('emailSubject'), tag)
-        ]
-
         function_array.forEach((item ,index) => {
             // if((!map.has('common_example_sent') && !map.has('common_example_received'))
             //      && index === 2) return;
@@ -290,9 +294,13 @@ function initContainer(map ,isHome){
                     item()
                 } 
             };
-            noteMessage += `${icon_array[index][0]} ${icon_array[index][1]}<br>`
             linkareaDivTag.appendChild(iconfunctionATag);
         })
+        // 方法與圖示說明分開
+        icon_array.forEach(item =>{
+            noteMessage += `${item[0]} ${item[1]}<br>`;
+        })
+
         messageSystem(noteMessage);
     
         linkareaDivTag.appendChild(document.createElement('br'));

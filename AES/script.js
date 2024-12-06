@@ -2,6 +2,7 @@ const { key, value ,classname } = linkGroup[5];
 titleMessage = value[1];
 common_header(titleMessage ,isHome);
 
+var generate = '已生成';
 var aes_keylength = '密钥长度';
 var aes_Plaintext = '明文数据（Plaintext）';
 var aes_Key = '密钥（Key）';
@@ -40,40 +41,93 @@ map.set(`common_intro_received`,[`進階加密標準（英語：Advanced Encrypt
 
     加密时使用的 IV，必须与加密时的值一致。`
 ]);
-map.set(`common_example_sent`,[``,``,``,``]);
-map.set(`common_example_received`,[
-    `encrypt 加密範例1<br>
-    ${toastr_warning_keySet}<br>
-    輸入要加密的內容：123<br>
-    ${toastr_warning_encryptData}<br>
-    加密後會顯示<br>
-    ${aes_Plaintext}：<br>123<br>
-    ${aes_Key}：<br>0lUuXjWvUPNtcDw1rYYQlw==<br>
-    ${aes_IV}：<br>jGsK2uxYqpv3qlUx<br>
-    ${aes_Ciphertext}：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>`,
-    
-    `decrypt 解密範例1<br>
-    點選${list_icon} 會顯示當前密鑰、加解密字串、偏移量<br>
-    ${toastr_warning_decryptData}<br>
-    解密後會顯示<br>
-    ${aes_Ciphertext}：<br>bRP26/CDQLITaPmu5ok/NgY+GQ==<br>
-    ${aes_Key}：0lUuXjWvUPNtcDw1rYYQlw==<br>
-    ${aes_IV}：<br>jGsK2uxYqpv3qlUx<br>
-    ${aes_Plaintext}：<br>123<br>`,
-    
-    `encrypt 加密範例2<br>
-    使用現有的參數進行AES加密<br>
-    ${aes_Plaintext}：<br>data@@123<br>
-    ${aes_Key}：<br>key@@0lUuXjWvUPNtcDw1rYYQlw==<br>
-    ${aes_IV}：<br>iv@@jGsK2uxYqpv3qlUx<br>`,
-    
-    `decrypt 解密範例2<br>
-    使用現有的參數進行AES解密<br>
-    ${aes_Ciphertext}：<br>data@@bRP26/CDQLITaPmu5ok/NgY+GQ==<br>
-    ${aes_Key}：<br>key@@0lUuXjWvUPNtcDw1rYYQlw==<br>
-    ${aes_IV}：<br>iv@@jGsK2uxYqpv3qlUx<br>`,
-]);
-map.set(`common_type123_received` ,[`key@@`,`iv@@`,`encryptedData@@`]);
+map.set(`common_type123_received` ,[`key@@`,`iv@@`,`ciphertext@@`]);
+map.set('common_unittest_array1' ,[
+    () => sendMessage_unittest([
+        {key: 'key' ,value: 'key@@fInrHRV8V55RixvU5Dyzyw=='},
+        {key: 'iv' ,value: 'iv@@AvT1LJS2dkjYnXeY'},
+        {key: 'plaintext' ,value: '123'},
+        {key: 'ciphertext' ,value: ''},
+    ] ,'detailmethod'),
+    () => setTimeout(() => {
+        toastr.info(toastr_warning_encryptData)
+    },2000)
+])
+map.set('common_unittest_array2' ,[
+    () => sendMessage_unittest([
+        {key: 'key' ,value: 'key@@2iQYGhQT7U2ADVcHW0r4IgolvfT+YJGqD4RfCkYrvmI='},
+        {key: 'iv' ,value: 'iv@@QJ1btcOy2KSpoW+7'},
+        {key: 'plaintext' ,value: ''},
+        {key: 'ciphertext' ,value: 'ciphertext@@dHX7xi+Ii8HRm2QB8pBJdmLo2ALR+A=='},
+    ] ,'detailmethod'),
+    () => setTimeout(() => {
+        toastr.info(toastr_warning_decryptData)
+    },2000)
+])
+
+map.set('common_operate_received' ,[
+`透過圖示生成密鑰與IV<br>
+共同步驟：<br>
+1. ${toastr_warning_keySet}<br>
+2. 點選IV生成${aes_IV}<br>
+<br>
+
+加密步驟：<br>
+1. 下方輸入要加密的數據接著點選"send"按鈕送出<br>
+2. 點選${list_icon} 查看當前數據，輸入的內容應該會顯示在 "${aes_Plaintext}"<br>
+3. 點選${toastr_warning_encryptData}<br>
+<br>
+解密步驟：<br>
+1. 下方輸入"ciphertext@@解密的數據"接著點選"send"按鈕送出<br>
+2. 點選${list_icon} 查看當前數據，輸入的內容應該會顯示在 "${aes_Ciphertext}"<br>
+3. 點選${toastr_warning_decryptData}
+`,
+`自備密鑰與IV (關鍵詞請點選 ${type123_icon} 複製貼上)<br>
+共同步驟：<br>
+1. 下方輸入 "key@@你的密鑰"<br>
+2. 下方輸入 "iv@@你的IV"<br>
+<br>
+加密步驟：<br>
+1. 下方輸入要加密的數據接著點選"send"按鈕送出<br>
+2. 點選${list_icon} 查看當前數據，輸入的內容應該會顯示在 "${aes_Plaintext}"<br>
+3. 點選${toastr_warning_encryptData}<br>
+<br>
+解密步驟：<br>
+1. 下方輸入 "ciphertext@@解密的數據" 接著點選"send"按鈕送出<br>
+2. 點選${list_icon} 查看當前數據，輸入的內容應該會顯示在 "${aes_Ciphertext}"<br>
+3. 點選${toastr_warning_decryptData}`
+])
+
+icon_array = [
+    [comment_icon ,comment_icon_note] ,
+    [operate_icon ,'操作說明'] ,
+    [intro_icon ,intro_icon_note] ,
+    [`${example_icon}1` ,`加密測試`] ,
+    [`${example_icon}2` ,`解密測試`] ,
+    [type123_icon ,type_icon_note] ,
+    [removeAllMessage_icon ,removeMessage_icon_note] ,
+    [email_icon ,email_icon_note],
+    ['' ,''],
+    ['128' ,`${aes_keylength}128`],
+    ['256' ,`${aes_keylength}256`],
+    ['IV' ,aes_IV],
+    [list_icon ,'當前數據'],
+    [E_icon ,'進行AES加密'],
+    [D_icon ,'進行AES解密'],
+];
+
+function_array = [
+    () => common_comment() ,
+    () => common_operate(map.get('common_operate_received')) ,
+    () => common_intro(map.get('common_intro_received')) ,
+    () => common_unittest(map.get('common_unittest_array1')),
+    () => common_unittest(map.get('common_unittest_array2')),
+    // () => common_example(map.get('common_example_sent') ,map.get('common_example_received')) ,
+    () => common_type123(map.get('common_type123_received')) ,
+    () => removeAllMessage(),
+    (tag) => common_email(map.get('emailSubject'), tag)
+]
+
 initContainer(map ,isHome);
 addIcon();
 
@@ -81,6 +135,7 @@ var keyObj = '';
 var ivObj = ''
 var ciphertextObj = '';
 
+// to show on chatbody is str
 var keyStr = '';
 var ivStr = ''
 var plaintextStr = '';
@@ -122,36 +177,51 @@ async function generateGCMKey(keyLength) {
     );
 }
 
-async function encryptData(key, data) {
+async function encryptData() {
     try {
-        const iv = crypto.getRandomValues(new Uint8Array(12)); // 生成隨機 IV（初始化向量）
-        const encodedData = new TextEncoder().encode(data); // 編碼成 Uint8Array
+        let iv = '';
+        if(ivObj === ''){
+            iv = crypto.getRandomValues(new Uint8Array(12)); // 生成隨機 IV（初始化向量）
+            ivObj = iv;
+            ivStr = arrayBufferToBase64(iv);
+            setTimeout(() => {
+                toastr.success(`${aes_IV}："${ivStr}" ${generate}`);
+            },1000);
+        }else{
+            iv = ivObj;
+        }
+        console.log(`encryptData ivObj:${ivObj}`)
+        console.log(`encryptData ivObj:${iv}`)
+        const encodedData = new TextEncoder().encode(plaintextStr); // 編碼成 Uint8Array
         const encrypted = await crypto.subtle.encrypt(
             {
                 name: "AES-GCM",
                 iv: iv, // 必須提供唯一的 IV
             },
-            key,
+            keyObj,
             encodedData
         );
         return { encryptedData: new Uint8Array(encrypted), iv }; // 返回加密數據和 IV
     } catch (error) {
         if (error.name === "InvalidCharacterError") {
-            toastr.warning(`請檢查${aes_Plaintext}是否正確`);
-            console.error(error.message);
+            toastr.warning(`请检查 ${aes_Plaintext} 是否正确`);
+        } else {
+            console.error("Encryption error:", error.message);
         }
+        // 返回一个空对象以防止解构错误
+        return {};
     }
 }
 
-async function decryptData(key, encryptedData, iv) {
+async function decryptData() {
     try {
         const decrypted = await crypto.subtle.decrypt(
             {
                 name: "AES-GCM",
-                iv: iv, // 必須使用相同的 IV
+                iv: ivObj, // 必須使用相同的 IV
             },
-            key,
-            encryptedData
+            keyObj,
+            ciphertextObj
         );
         return new TextDecoder().decode(decrypted); // 解碼為字符串
     } catch (error) {
@@ -333,7 +403,7 @@ function generateKeyIcon(linkareaDivTag){
             toastrArray[2][1] = keyStr;
             receivedMessage(`${aes_keylength}：<br>${item}<br>key：<br>${keyStr}` ,keyStr);
             setTimeout(() => {
-                toastr.success(`${aes_Key}已生成`);
+                toastr.success(aes_Key + generate);
             },1000);
             consoleLog()
         };
@@ -352,7 +422,7 @@ function generateIVIcon(linkareaDivTag){
 
         receivedMessage(`IV：<br>${ivStr}` ,ivStr);
         setTimeout(() => {
-            toastr.success(`${aes_IV}已生成`);
+            toastr.success(aes_IV + generate);
         },1000);
         consoleLog()
     };
@@ -361,7 +431,7 @@ function generateIVIcon(linkareaDivTag){
 
 function generateDetailIcon(linkareaDivTag){
     const iconATag = document.createElement('a');
-    iconATag.classList.add('icon-link');
+    iconATag.classList.add('icon-link' ,'detailmethod');
     iconATag.innerHTML = list_icon;
     iconATag.onclick = function () {
         aesForeach();
@@ -399,14 +469,14 @@ function aesForeach(isCheckData){
 
 function generateEncryptIcon(linkareaDivTag){
     const iconATag = document.createElement('a');
-    iconATag.classList.add('icon-link');
+    iconATag.classList.add('icon-link' ,'encryptmethod');
     iconATag.innerHTML = E_icon;
     iconATag.onclick = async function () {
         if(aesForeach('Encrypt') === null) return;
 
-        const { encryptedData, iv } = await encryptData(keyObj, plaintextStr);
+        const { encryptedData, iv } = await encryptData();
         ciphertextObj = encryptedData;
-        ciphertextStr = arrayBufferToBase64(encryptedData);
+        ciphertextStr = arrayBufferToBase64(ciphertextObj);
         toastrArray[1][1] = ciphertextStr;
         ivObj = iv;
         ivStr = arrayBufferToBase64(iv);
@@ -424,12 +494,12 @@ function generateEncryptIcon(linkareaDivTag){
 
 function generateDecryptIcon(linkareaDivTag){
     const iconATag = document.createElement('a');
-    iconATag.classList.add('icon-link');
+    iconATag.classList.add('icon-link' ,'decryptmethod');
     iconATag.innerHTML = D_icon;
     iconATag.onclick = async function () {
         if(aesForeach('Decrypt') === null) return;
 
-        plaintextStr = await decryptData(keyObj, ciphertextObj, ivObj);
+        plaintextStr = await decryptData();
         toastrArray[0][1] = plaintextStr;
 
         if(typeof plaintextStr !== 'undefined'){
@@ -441,4 +511,28 @@ function generateDecryptIcon(linkareaDivTag){
         }
     };
     linkareaDivTag.appendChild(iconATag);
+}
+
+function sendMessage_unittest(testarray ,classname){
+    const messageInput = document.getElementById('messageInput');
+    testarray.forEach(({key ,value}) =>{
+        messageInput.value = value;
+        sendMessage();
+    })
+    consoleLog();
+    const icon = document.querySelector(`.${classname}`);
+    icon.click();
+}
+
+function common_operate(){
+    if(!isOperateClicked){
+        const array = map.get('common_operate_received');
+        array.forEach(item => {
+            messageSystem(item);
+        })
+        isOperateClicked = true;
+        toastr.success(toastr_success_operate);
+        return;
+    }
+    toastr.warning(toastr_warning_operate);
 }
