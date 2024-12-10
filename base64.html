@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <script src="useSharedContent.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    const Container = ({subject}) => {
+        const comment1 = { text: "請輸入Base64，我將幫你轉換成字符串<br>或是輸入字符串，我將幫你轉換成Base64。", type: "received" , isHTML: true};
+
+        const pointMessages = [
+            { text: `一种将二进制数据转换为ASCII字符的编码方式，常用于电子邮件和数据传输。`,
+                type: "received", icon: "fa-solid fa-mug-hot", isHTML: true },
+        ];
+
+        const exampleMessages = [
+        ];
+
+        const testMessages = [
+        ]
+
+        const [messages, setMessages] = React.useState([
+            // default messages
+        ]);
+        
+        React.useEffect(() => {
+            window.SharedContent.addcomment2();
+    
+    const combinedMessages = [comment1, ...window.SharedContent.comment2];
+    setMessages(combinedMessages);
+        }, []);
+        
+        const [inputMessage, setInputMessage] = React.useState("");
+        
+        const handleSendMessage = () => {
+            
+            window.SharedContent.handleSendMessage(subject, inputMessage, setMessages, setInputMessage,
+                                                    pointMessages, exampleMessages, testMessages
+            );
+        };
+
+        // 滾動功能
+        React.useEffect(() => {
+            
+            window.SharedContent.scrollToBottom("chatBody");
+        }, [messages]);
+
+        // 正则表达式匹配 Base64 编码格式
+        const isBase64 = (str) => {
+            const regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+            if(regex.test(str)){
+                // Base64 转字符串
+                return decodeURIComponent(escape(atob(str)));
+            }
+            // 字符串转 Base64
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        window.SharedContent.resultMethod = (inputMessage ,istest) =>{
+            if(istest){
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: inputMessage, type: "sent" }
+                ]);
+            }
+
+            let msg = isBase64(inputMessage);
+
+            setTimeout(() => {
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: msg, type: "received cancopy", icon: "fa-solid fa-copy", isHTML: true, copy: msg}
+                ]);
+            }, 1000);
+        }
+
+        return (
+            <div className="container">
+                <div className="link-area" dangerouslySetInnerHTML={{ __html: subject }}></div>
+                <div className="chat-box" id="chatBody">
+                {messages.map((msg, index) => (
+                    <div key={index} className={`message ${msg.type}`}
+                    onClick={msg.copy && msg.type.includes("cancopy") ? 
+                        () => window.SharedContent.handleCopy(msg.copy) : undefined}>
+                    {msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
+                    {msg.isHTML ? (
+                        <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
+                    ) : (
+                        msg.text
+                    )}
+                    </div>
+                ))}
+                </div>  
+                <div className="input-area">
+                <input
+                    className="input-message"
+                    id="messageInput"
+                    placeholder="輸入消息..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                />
+                <button className="send-button" onClick={handleSendMessage}>
+                    Send
+                </button>
+                </div>
+            </div>
+        );
+    };
+
+    // 主 App 組件
+    const App = ({subject}) => {
+      React.useEffect(() => {
+        document.title = subject; // 設置動態標題
+      }, [subject]);
+
+      return (
+        <React.Fragment>
+          <Container subject='编码（Encode）<br>字符串和Base64的相互转换方式<br>convert base64 to string to base64'/>
+        </React.Fragment>
+      );
+    };
+
+    // 渲染 App 組件到 DOM
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App subject='编码（Encode） 字符串和base64的相互转换方式 convert base64 to string to base64'/>);
+  </script>
+</body>
+</html>

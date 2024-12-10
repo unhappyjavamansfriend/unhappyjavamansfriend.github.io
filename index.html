@@ -1,1 +1,186 @@
-<meta charset="UTF-8"><link rel="stylesheet" href="styles.css"><body><script src="script.js"></script><script>common_header(`unhappyTools` ,true);initContainer('' ,true); generateHomeIcon()</script></body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+
+    const Container = () => {
+        const [messages, setMessages] = React.useState([]);
+        
+        const [inputMessage, setInputMessage] = React.useState("");
+        
+        const hrefArray = [
+            {key: "taiwanese ping" ,decribe: "平方公尺換算台坪數" ,href: "TaiwanesePing.html"},
+            // {key: "taiwanese ping" ,decribe: "平方公尺換算台坪數" ,href: "TaiwanesePing.html"},
+            {key: "hex" ,decribe: "编码（Encode）十六進制" ,href: "convertHexadecimalToChinese.html"},
+            // {key: "hexadecimal" ,decribe: "编码（Encode）十六進制" ,href: "convertHexadecimalToChinese.html"},
+            {key: "unicode" ,decribe: "编码（Encode）unicode \\u" ,href: "convertUnicodeToChinese.html"},
+            // {key: "%" ,decribe: "编码（Encode）URL編碼 百分比編碼" ,href: "convertURLToChinese.html"},
+            {key: "URL" ,decribe: "编码（Encode）URL編碼 百分比編碼" ,href: "convertURLToChinese.html"},
+            {key: "base64" ,decribe: "编码（Encode）Baes64" ,href: "base64.html"},
+            {key: "md5" ,decribe: "哈希（Hash）MD5" ,href: "md5.html"},
+            {key: "sha1" ,decribe: "哈希（Hash）SHA-1" ,href: "sha1.html"},
+            {key: "sha256" ,decribe: "哈希（Hash）SHA-256" ,href: "sha256.html"},
+            {key: "aes" ,decribe: "加密（Encrypt）AES" ,href: "aes.html"},
+            {key: "rsa" ,decribe: "加密（Encrypt）RSA" ,href: "rsa.html"},
+            {key: "qrcode" ,decribe: "QR code 二維條碼" ,href: "qrcode.html"},
+            {key: "encode" ,decribe: `编码（Encode）<br>
+            定义：编码是将数据从一种格式转换成另一种格式的过程，通常是为了便于存储或传输。编码过程是可逆的，即可以通过相应的方法将编码后的数据还原为原始数据。<br>
+            用途：<br>
+            将二进制数据转换为文本格式，以便在网络上传输，例如 Base64 编码。<br>
+            处理特殊字符，使其适合在 URL 中使用，例如 URL 编码。<br>
+            示例：Base64 编码将二进制数据转换为 ASCII 字符串。`
+            ,hrefArray: [
+                {key: "hex" ,decribe: "编码（Encode）十六進制" ,href: "convertHexadecimalToChinese.html"},
+                {key: "unicode" ,decribe: "编码（Encode）unicode \\u" ,href: "convertUnicodeToChinese.html"},
+                {key: "URL" ,decribe: "编码（Encode）URL編碼 百分比編碼" ,href: "convertURLToChinese.html"},
+                {key: "base64" ,decribe: "编码（Encode）Baes64" ,href: "base64.html"},
+            ]},
+            {key: "hash" ,decribe: `哈希（Hash）<br>
+            定义：哈希是一种将任意长度的数据映射为固定长度的字符串（哈希值）的过程。哈希函数是不可逆的，意味着无法从哈希值反推出原始数据。<br>
+            用途：<br>
+            验证数据完整性，例如检查文件是否被篡改。<br>
+            存储密码时，通常会存储其哈希值而不是明文密码，以提高安全性。<br>
+            示例：常见的哈希算法包括 MD5、SHA-1 和 SHA-256。`
+            ,hrefArray: [
+                {key: "md5" ,decribe: "哈希（Hash）MD5" ,href: "md5.html"},
+                {key: "sha1" ,decribe: "哈希（Hash）SHA-1" ,href: "sha1.html"},
+                {key: "sha256" ,decribe: "哈希（Hash）SHA-256" ,href: "sha256.html"},
+            ]},
+            {key: "encrypt" ,decribe: `加密（Encrypt）<br>
+定义：加密是使用算法和密钥将原始数据转换为密文的过程。加密过程是可逆的，只要有正确的密钥，就可以将密文解密回原始数据。<br>
+用途：<br>
+保护敏感信息，例如用户密码、信用卡信息等，防止未授权访问。<br>
+示例：对称加密（如 AES）和非对称加密（如 RSA）。`
+,hrefArray: [
+                {key: "aes" ,decribe: "加密（Encrypt）AES" ,href: "aes.html"},
+                {key: "rsa" ,decribe: "加密（Encrypt）RSA" ,href: "rsa.html"},
+            ]},
+        ]
+
+        const map = new Map();
+        let comment1 = [
+            { text: `很抱歉，我不明白您的需求。可以搜尋工具的關鍵字：`, type: "received" ,isHTML: true},
+        ]
+
+        hrefArray.forEach(item => {
+            if(!item.hrefArray){
+                // console.log(item.key)
+                comment1.push({ text: `${item.decribe} 請輸入 '${item.key}'`, type: "received" ,isHTML: true})
+
+            }
+            map.set(item.key ,item);
+        })
+
+        const handleSendMessage = () => {
+            setMessages(prevMessages => [
+                ...prevMessages,
+                { text: inputMessage, type: "sent" }
+            ]);
+
+            // 根據輸入內容決定回覆訊息
+            let match = map.get(inputMessage.trim());
+            setInputMessage(""); // 發送後清空輸入框
+
+            if (match) {
+                if (match.href) {
+                    window.location.href = match.href;
+                } else if (Array.isArray(match.hrefArray) && match.hrefArray.length > 0) {
+                    setTimeout(() => {
+                        setMessages(prevMessages => [
+                            ...prevMessages,
+                            {text: match.decribe , type: "received" ,isHTML: true}
+                        ]);
+                    }, 1000); 
+                    match.hrefArray.forEach(item => {
+                        setTimeout(() => {
+                            setMessages(prevMessages => [
+                                ...prevMessages,
+                                {text: item.key , type: "received" ,link: item.href ,icon: "fa-solid fa-link"}
+                            ]);
+                        }, 1000); 
+                    })
+                }
+                return;
+            }
+
+            // 新增回覆訊息到訊息列表
+            comment1.forEach(item => {
+                setTimeout(() => {
+                    setMessages(prevMessages => [
+                        ...prevMessages,
+                        item
+                    ]);
+                }, 1000); // 模擬延遲回覆
+            })
+
+        };
+
+        return (
+            <div className="container">
+                <div className="chat-box" id="chatBody">
+                {messages.map((msg, index) => (
+                    <div key={index} className={`message ${msg.type}`}>
+                    {msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
+                    {msg.link 
+                        ? (
+                        <a href={msg.link} className="icon-link">{msg.text}</a> // 超連結
+                    ) : (
+                        msg.isHTML ? (
+                            <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
+                        ) : (
+                            msg.text
+                        )
+                    )}
+                    </div>
+                ))}
+                </div>  
+                <div className="input-area">
+                <input
+                    className="input-message"
+                    id="messageInput"
+                    placeholder="輸入消息..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                />
+                <button className="send-button" onClick={handleSendMessage}>
+                    Send
+                </button>
+                </div>
+            </div>
+        );
+    };
+    
+    // 主 App 組件
+    const App = ({titleTagValue}) => {
+      React.useEffect(() => {
+        document.title = titleTagValue; // 設置動態標題
+      }, [titleTagValue]);
+
+      return (
+        <React.Fragment>
+          <Container />
+        </React.Fragment>
+      );
+    };
+
+    // 渲染 App 組件到 DOM
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App titleTagValue='unhappyjavamansfriendsTools'/>);
+  </script>
+  
+</body>
+</html>
