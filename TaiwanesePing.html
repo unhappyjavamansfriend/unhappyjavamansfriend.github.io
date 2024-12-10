@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    const Container = ({subject}) => {
+        const comment1 = { text: "請先選擇單位 (公分/公尺)。", type: "received" };
+        const comment2 = { text: "搜尋其他功能類的關鍵字：(知識點、knowledge、point)、(範例、sample、ex)、(清除、remove)、(反饋、feedback)", type: "received" };
+
+        const [messages, setMessages] = React.useState([
+            { text: "請輸入兩次數值來代表長和寬，我將幫你計算坪數。", type: "received" },
+            comment1,comment2
+        ]);
+    
+        const [unit, setUnit] = React.useState(""); // 儲存當前使用的單位
+        const [inputMessage, setInputMessage] = React.useState("");
+        const [firstInput, setFirstInput] = React.useState(null); // 儲存第一次輸入的數值
+        
+        // React.useEffect(() => {
+        //     console.log("unit 的值改變為:", unit);
+        // }, [unit]);
+
+        // 滾動功能
+        React.useEffect(() => {
+            const chatBody = document.getElementById("chatBody");
+            if (chatBody) {
+                chatBody.scrollTop = chatBody.scrollHeight; // 滾動到底部
+            }
+        }, [messages]); // 當 messages 改變時觸發
+
+        const handleCopy = (text) => {
+        const plainText = text.replace(/<br>/g, "\n"); // 將 HTML 換行轉為普通換行
+        navigator.clipboard.writeText(plainText)
+            .then(() => toastr.success("訊息已複製！"))
+            .catch(() => toastr.waining("複製失敗，請重試！"));
+        };
+
+        const calculatePings = (length, width, unit) => {
+            let areaSquareMeters = 0;
+            if (unit === "cm") {
+                areaSquareMeters = (length / 100) * (width / 100); // 公分轉平方公尺
+            } else if (unit === "m") {
+                areaSquareMeters = length * width; // 直接為平方公尺
+            }
+            return (areaSquareMeters / 0.3025).toFixed(2); // 平方公尺轉坪數
+        };
+
+        const common_email = () => {
+            const emailSubject = `我想針對[unhappyjavamansfriend.github.io]的"${subject}"提出一些反饋`;
+            const body = `(請勿修改主題)以下是我的反饋內容：`;
+            window.location.href = `mailto:oldfe01@outlook.com?subject=${encodeURIComponent(emailSubject)}&body=${encodeURIComponent(body)}`;
+        };
+
+        const handleSendMessage = () => {
+            if (inputMessage.trim()) {
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: inputMessage, type: "sent" }
+                ]);
+
+                const parsedInput = parseFloat(inputMessage.replace(/[^\d.]/g, "")); // 提取數字部分
+
+                if (!unit && (inputMessage.includes("公分") || inputMessage.includes("cm"))) {
+                    setUnit("cm");
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { text: "您選擇了單位公分，請輸入第一個數值。", type: "received" }
+                    ]);
+                } else if (!unit && (inputMessage.includes("公尺") || inputMessage.includes("m"))) {
+                    setUnit("m");
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { text: "您選擇了單位公尺，請輸入第一個數值。", type: "received" }
+                    ]);
+                } else if (unit !== inputMessage && (inputMessage.includes("cm") || inputMessage.includes("m"))) {
+                    if(inputMessage.includes("公分") || inputMessage.includes("cm")){
+                        setUnit("cm");
+                        setFirstInput(null);
+                        setMessages((prevMessages) => [
+                            ...prevMessages,
+                            { text: "您重新選擇了單位公分，請輸入第一個數值。", type: "received" }
+                        ]);
+                    }else{
+                        setUnit("m");
+                        setFirstInput(null);
+                        setMessages((prevMessages) => [
+                            ...prevMessages,
+                            { text: "您重新選擇了單位公尺，請輸入第一個數值。", type: "received" }
+                        ]);
+                    }
+                } else if (unit && firstInput === null && !isNaN(parsedInput)) {
+                    // 處理第一次數值輸入
+                    setFirstInput(parsedInput);
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { text: "請輸入第二個數值。", type: "received" }
+                    ]);
+                } else if (unit && firstInput !== null && !isNaN(parsedInput)) {
+                    // 處理第二次數值輸入並進行坪數計算
+                    const secondInput = parsedInput;
+                    const result = calculatePings(firstInput, secondInput, unit);
+                    const resultMessage = `長：${firstInput} ${unit === "cm" ? "公分" : "公尺"}<br>寬：${secondInput} ${unit === "cm" ? "公分" : "公尺"}<br>計算結果：${result} 坪`;
+
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { text: resultMessage, type: "received", isHTML: true ,copy: result}
+                    ]);
+                    setFirstInput(null); // 重置狀態s
+                    setUnit(""); // 重置單位
+                } else if (inputMessage.includes("反饋") || inputMessage.includes("feedback")) {
+                    common_email();
+                    setTimeout(() => {
+                        setMessages((prevMessages) => [
+                            ...prevMessages,
+                            { text: "感謝您的反饋！我們已經準備好接收您的意見。", type: "received" }
+                        ]);
+                    }, 1000); // 模擬延遲回覆
+                } else if (inputMessage.includes("清除") || inputMessage.includes("remove")) {
+                    setMessages([]); // 清除訊息列表
+                } else if (inputMessage.includes("知識點") || inputMessage.includes("knowledge") || inputMessage.includes("point")) {
+                    setTimeout(() => {
+                        setMessages(prevMessages => [
+                            ...prevMessages,
+                            { text: `1平方公尺 = 0.3025坪<br>
+                            1坪 = 3.30579 平方公尺<br>
+                            1公頃 = 10000 平方公尺= 3025 坪= 1.03102 甲<br>
+                            1甲 = 10 分= 2934 坪= 0.96992 公頃<br>
+                            1平方公里 = 100 公頃`, type: "received", icon: "fa-solid fa-mug-hot", isHTML: true },
+                            { text: `The size of my house is 115.710 square meters (sqm.) which is equal to 35 Taiwanese ping. <br>
+                            我家面積為115.710平方公尺相當於35台坪`, type: "received", icon: "fa-solid fa-mug-hot", isHTML: true },
+                        ]);
+                    }, 1000); // 模擬延遲回覆
+                
+                } else if (inputMessage.includes("範例") || inputMessage.includes("sample") || inputMessage.includes("ex")) {
+                    const exampleMessages = [
+                        { text: "範例如下：", type: "received", icon: "fa-solid fa-book" },
+                        { text: "公分", type: "sent" },
+                        { text: "300", type: "sent" },
+                        { text: "請輸入第二個公分數值。", type: "received" },
+                        { text: "400", type: "sent" },
+                        { text: "長：300 公分<br>寬：400 公分<br>計算結果：39.67 坪", type: "received", isHTML: true }
+                    ];
+
+                    exampleMessages.forEach((msg, index) => {
+                        setTimeout(() => {
+                            setMessages((prevMessages) => [...prevMessages, msg]);
+                        }, 1000 * (index + 1));
+                    });
+                } else {
+                    // 處理非數字輸入
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        comment1,comment2
+                    ]);
+                }
+                
+                setInputMessage(""); // 清空輸入框
+            }
+        };
+
+
+        return (
+            <div className="container">
+                <div className="link-area" dangerouslySetInnerHTML={{ __html: subject }}></div>
+                <div className="chat-box" id="chatBody">
+                {messages.map((msg, index) => (
+                    <div key={index} className={`message ${msg.type}`}
+                    onClick={msg.copy && msg.type.includes("cancopy") ? 
+                        () => handleCopy(msg.copy) : undefined}>{msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
+                    {msg.isHTML ? (
+                        <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
+                    ) : (
+                        msg.text
+                    )}
+                    </div>
+                ))}
+                </div>  
+                <div className="input-area">
+                <input
+                    className="input-message"
+                    id="messageInput"
+                    placeholder="輸入消息..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                />
+                <button className="send-button" onClick={handleSendMessage}>
+                    Send
+                </button>
+                </div>
+            </div>
+        );
+    };
+
+    // 主 App 組件
+    const App = ({subject}) => {
+      React.useEffect(() => {
+        document.title = subject; // 設置動態標題
+      }, [subject]);
+
+      return (
+        <React.Fragment>
+          <Container subject='無懼挑戰，精準換算台坪數 sqm to Taiwanese ping！'/>
+        </React.Fragment>
+      );
+    };
+
+    // 渲染 App 組件到 DOM
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App subject='無懼挑戰，精準換算台坪數 sqm to Taiwanese ping！'/>);
+  </script>
+</body>
+</html>

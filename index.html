@@ -1,1 +1,111 @@
-<meta charset="UTF-8"><link rel="stylesheet" href="styles.css"><body><script src="script.js"></script><script>common_header(`unhappyTools` ,true);initContainer('' ,true); generateHomeIcon()</script></body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    const Container = () => {
+        const [messages, setMessages] = React.useState([]);
+    
+        const [inputMessage, setInputMessage] = React.useState("");
+    
+        const handleSendMessage = () => {
+            if (inputMessage.trim()) {
+                setMessages(prevMessages => [
+                    ...prevMessages,
+                    { text: inputMessage, type: "sent" }
+                ]);
+                // 根據輸入內容決定回覆訊息
+                let reply = "";
+                if (inputMessage.includes("坪數") || inputMessage.includes("台坪")) {
+                    reply = { text: "無懼挑戰，精準換算台坪數！sqm to Taiwanese ping", type: "received", link: "TaiwanesePing.html", icon: "fa-solid fa-calculator" };
+                } else if(inputMessage.includes("hexadecimal")){
+                    reply = { text: "字符解析大作戰，十六進制的全景探索！", type: "received", link: "convertHexadecimalToChinese.html", icon: "fa-solid fa-code" };
+                } else if(inputMessage.includes("unicode")){
+                    reply = { text: "Unicode 揭開字符轉換的神秘面紗！", type: "received", link: "convertUnicodeToChinese.html", icon: "fa-solid fa-code" };
+                } else if(inputMessage.includes("url")){
+                    reply = { text: "解密編碼世界，掌握字符解析 URL！", type: "received", link: "convertURLToChinese.html", icon: "fa-solid fa-code" };
+                } else if(inputMessage.includes("md5")){
+                    reply = { text: "不可逆的信任之鎖， MD5 數據校驗的極致力量！", type: "received", link: "md5.html", icon: "fa fa-key" };
+                } else if(inputMessage.includes("aes")){
+                    reply = { text: "數據的守護者，AES-GCM 高速加密的絕對防線！", type: "received", link: "aesgcm.html", icon: "fa fa-key" };
+                } else if(inputMessage.includes("qrcode")){
+                    reply = { text: "連接世界的橋樑，QR Code 數位化未來的象徵！", type: "received", link: "qrcode.html", icon: "fa-solid fa-qrcode" };
+                } else {
+                    reply = { text: "很抱歉，我不明白您的需求。可以搜尋工具的關鍵字：坪數、hexadecimal、unicode、url、md5、aes、qrcode", type: "received"};
+                }
+
+                // 新增回覆訊息到訊息列表
+                setTimeout(() => {
+                    setMessages(prevMessages => [
+                        ...prevMessages,
+                        reply
+                    ]);
+                }, 1000); // 模擬延遲回覆
+
+                setInputMessage(""); // 發送後清空輸入框
+            }
+        };
+
+        return (
+            <div className="container">
+                <div className="chat-box" id="chatBody">
+                {messages.map((msg, index) => (
+                    <div key={index} className={`message ${msg.type}`}>
+                    {msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
+                    {msg.link 
+                        ? (
+                        <a href={msg.link} className="icon-link">{msg.text}</a> // 超連結
+                    ) : (
+                        msg.text // 普通文本
+                    )}
+                    </div>
+                ))}
+                </div>  
+                <div className="input-area">
+                <input
+                    className="input-message"
+                    id="messageInput"
+                    placeholder="輸入消息..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                />
+                <button className="send-button" onClick={handleSendMessage}>
+                    Send
+                </button>
+                </div>
+            </div>
+        );
+    };
+
+    // 主 App 組件
+    const App = ({titleTagValue}) => {
+      React.useEffect(() => {
+        document.title = titleTagValue; // 設置動態標題
+      }, [titleTagValue]);
+
+      return (
+        <React.Fragment>
+          <Container />
+        </React.Fragment>
+      );
+    };
+
+    // 渲染 App 組件到 DOM
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App titleTagValue='unhappyjavamansfriendsTools'/>);
+  </script>
+</body>
+</html>
