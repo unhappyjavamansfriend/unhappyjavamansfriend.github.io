@@ -19,7 +19,6 @@
     <script type="text/babel">
     const Container = ({subject}) => {
         const comment1 = { text: "請先選擇單位 (公分/cm/公尺/m)，接著輸入兩次數值來代表長和寬，我將幫你計算坪數。", type: "received" };
-        const comment2 = { text: "搜尋其他功能類的關鍵字：(知識點、knowledge、point)、(範例、sample、ex)、(清除、remove)、(反饋、feedback)", type: "received" };
 
         const pointMessages = [
             { text: `1平方公尺 = 0.3025坪<br>
@@ -87,14 +86,14 @@
             }
             let result = '';
             const array = inputMessage.split(",");
-            const resultArray = [];
+            const resultArray = []; // 多個錯誤訊息用
 
             if (array.length !== 3 || !inputMessage.includes(",")) {
                 setTimeout(() => {
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         comment1,
-                        comment2
+                        window.SharedContent.comment2
                         // { text: `'${array}' 參數有誤，請參考範例`, type: "received"}
                     ]);
                 }, 1000);
