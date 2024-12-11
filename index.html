@@ -29,22 +29,29 @@
                 ]);
                 // 根據輸入內容決定回覆訊息
                 let reply = "";
-                if (inputMessage.includes("坪數") || inputMessage.includes("台坪")) {
-                    reply = { text: "無懼挑戰，精準換算台坪數！sqm to Taiwanese ping", type: "received", link: "TaiwanesePing.html", icon: "fa-solid fa-calculator" };
-                } else if(inputMessage.includes("hexadecimal")){
-                    reply = { text: "字符解析大作戰，十六進制的全景探索！", type: "received", link: "convertHexadecimalToChinese.html", icon: "fa-solid fa-code" };
+                if (inputMessage.includes("ping") || inputMessage.includes("TaiwanesePing")) {
+                    window.location.href = 'TaiwanesePing.html';
+
+                } else if(inputMessage.includes("hex") || inputMessage.includes("hexadecimal")){
+                    window.location.href = 'convertHexadecimalToChinese.html';
+
                 } else if(inputMessage.includes("unicode")){
-                    reply = { text: "Unicode 揭開字符轉換的神秘面紗！", type: "received", link: "convertUnicodeToChinese.html", icon: "fa-solid fa-code" };
-                } else if(inputMessage.includes("url")){
-                    reply = { text: "解密編碼世界，掌握字符解析 URL！", type: "received", link: "convertURLToChinese.html", icon: "fa-solid fa-code" };
+                    window.location.href = 'convertUnicodeToChinese.html';
+                    
+                } else if(inputMessage.includes("%") || inputMessage.includes("URL")){
+                    window.location.href = 'convertURLToChinese.html';
+                    
                 } else if(inputMessage.includes("md5")){
-                    reply = { text: "不可逆的信任之鎖， MD5 數據校驗的極致力量！", type: "received", link: "md5.html", icon: "fa fa-key" };
+                    window.location.href = 'md5.html';
+                    
                 } else if(inputMessage.includes("aes")){
-                    reply = { text: "數據的守護者，AES-GCM 高速加密的絕對防線！", type: "received", link: "aesgcm.html", icon: "fa fa-key" };
+                    window.location.href = 'aesgcm.html';
+                    
                 } else if(inputMessage.includes("qrcode")){
-                    reply = { text: "連接世界的橋樑，QR Code 數位化未來的象徵！", type: "received", link: "qrcode.html", icon: "fa-solid fa-qrcode" };
+                    window.location.href = 'qrcode.html';
+
                 } else {
-                    reply = { text: "很抱歉，我不明白您的需求。可以搜尋工具的關鍵字：坪數、hexadecimal、unicode、url、md5、aes、qrcode", type: "received"};
+                    reply = { text: "很抱歉，我不明白您的需求。可以搜尋工具的關鍵字：(pings、TaiwanesePing)、(hex、hexadecimal)、unicode、(%、URL)、md5、aes、qrcode", type: "received"};
                 }
 
                 // 新增回覆訊息到訊息列表
