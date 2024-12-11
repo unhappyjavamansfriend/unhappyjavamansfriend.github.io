@@ -18,7 +18,7 @@
 
     <script type="text/babel">
     const Container = ({subject}) => {
-        const comment1 = { text: "請先選擇單位 (公分/cm/公尺/m)，接著輸入兩次數值來代表長和寬，我將幫你計算坪數。", type: "received" };
+        const comment1 = { text: "請先輸入單位 (公分/cm/公尺/m)，接著輸入兩個數值來代表長和寬 (用 ',' 隔開)，我將幫你計算坪數。", type: "received" };
 
         const pointMessages = [
             { text: `1平方公尺 = 0.3025坪<br>
@@ -40,7 +40,7 @@
         ];
 
         const testMessages = [
-            '　,　, ','cm,　　,123','cm,-155,123','cm,123,asd','cm asd 123','m,１２３,４５６','cm,123,123,123','cm,123,456'
+            '公分,300,400','　,　, ','cm,　　,123','cm,-155,123','cm,123,asd','cm asd 123','m,１２３,４５６','cm,123,123,123','cm,123,456'
         ]
 
         const [messages, setMessages] = React.useState([
@@ -74,7 +74,7 @@
             }
             const result = (areaSquareMeters / 0.3025).toFixed(2); // 平方公尺轉坪數
             const resultMessage = `長：${length} ${unit === "cm" ? "公分" : "公尺"}<br>寬：${width} ${unit === "cm" ? "公分" : "公尺"}<br>計算結果：${result} 坪`;
-            return {resultMessage: resultMessage, copy: result};
+            return { resultMessage, copy: result};
         };
 
         window.SharedContent.resultMethod = (inputMessage ,istest) =>{
@@ -84,7 +84,7 @@
                     { text: inputMessage, type: "sent" }
                 ]);
             }
-            let result = '';
+            let result = 'ok';
             const array = inputMessage.split(",");
             const resultArray = []; // 多個錯誤訊息用
 
@@ -93,6 +93,10 @@
                     setMessages((prevMessages) => [
                         ...prevMessages,
                         comment1,
+                        { text: "公分,300,400", type: "received" },
+                        { text: "cm,300,400", type: "received" },
+                        { text: "公尺,3,4", type: "received" },
+                        { text: "m,3,4", type: "received" },
                         window.SharedContent.comment2
                         // { text: `'${array}' 參數有誤，請參考範例`, type: "received"}
                     ]);

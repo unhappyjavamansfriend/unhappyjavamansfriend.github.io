@@ -1,4 +1,7 @@
 window.SharedContent = {
+    comment2:{ text: "搜尋其他功能類的關鍵字：(home、back)、(knowledge、point)、(sample、ex)、(rm、remove)、feedback、test", type: "received" 
+
+    },
     scrollToBottom: (elementId) => {
         const chatBody = document.getElementById(elementId);
         if (chatBody) {
@@ -34,12 +37,17 @@ window.SharedContent = {
 
     handleSendMessage: (subject, inputMessage, setMessages, setInputMessage ,
         pointMessages, exampleMessages, testMessages) => {
+        if (inputMessage === '') {
+            toastr.warning("Empty message!"); // 顯示警告訊息
+            return; // 中斷後續執行
+        }
+            
         setMessages((prevMessages) => [
             ...prevMessages,
             { text: inputMessage, type: "sent" }
         ]);
     
-        if(inputMessage === "home"){
+        if(inputMessage === "home" || inputMessage === "back"){
             window.location.href = 'index.html';
     
         }else if (inputMessage === "feedback") {
