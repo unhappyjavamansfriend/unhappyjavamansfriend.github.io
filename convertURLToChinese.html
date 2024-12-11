@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.css" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
+    <script src="useSharedContent.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+    const Container = ({subject}) => {
+        const comment1 = { text: "請輸入URL編碼，我將幫你轉換成字符串<br>或是輸入字符串，我將幫你轉換成URL編碼。", type: "received", isHTML: true };
+
+        const pointMessages = [
+            { text: `URL編碼（又稱為百分比編碼）<br>是一種將不適合在url中使用的字符轉換為可安全傳輸的格式的方法。這些字符包括空格、特殊符號等。 編碼使用 % 符號後跟兩位十六進制數字來表示字符。`,
+                type: "received", icon: "fa-solid fa-mug-hot", isHTML: true },
+        ];
+
+        const exampleMessages = [
+            { text: "範例1如下：", type: "received", icon: "fa-solid fa-book" },
+            { text: "%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B", type: "sent" },
+            { text: "速度與激情9", type: "received"},
+            { text: "範例2如下：", type: "received", icon: "fa-solid fa-book" },
+            { text: "我有冰淇淋", type: "sent" },
+            { text: "%E9%80%9F%E5%BA%A6%E8%88%87%E6%BF%80%E6%83%859", type: "received"},
+        ];
+
+        const testMessages = [
+            '%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B','%21%40%23%24%25%5E%26%2A','!@#$%^&*()','%E4%BD%A0%20%E5%A5%BD','%20%20%20','我有冰淇淋','速度%E8%88%87%E6%BF%80%E6%83%859','Hello%E4%BD%A0%E5%A5%BDWorld','%ZZ速度'
+        ]
+
+        const [messages, setMessages] = React.useState([
+        comment1,window.SharedContent.comment2
+            // default messages
+        ]);
+    
+        const [unit, setUnit] = React.useState(""); // 儲存當前使用的單位
+        const [inputMessage, setInputMessage] = React.useState("");
+        const [firstInput, setFirstInput] = React.useState(null); // 儲存第一次輸入的數值
+        
+        const handleSendMessage = () => {
+            // 調用 common.js 中的全局方法
+            window.SharedContent.handleSendMessage(subject, inputMessage, setMessages, setInputMessage,
+                                                    pointMessages, exampleMessages, testMessages
+            );
+        };
+
+        // 滾動功能
+        React.useEffect(() => {
+            // 調用全局的滾動方法
+            window.SharedContent.scrollToBottom("chatBody");
+        }, [messages]);
+
+        const URLToStringToURL = (inputMessage) => {
+            let result = 'ok';
+            let msg = '';
+
+            try {
+                if (inputMessage.includes('%')) {
+                    try {
+                        msg =  decodeURIComponent(inputMessage);
+                    } catch (error) {
+                        console.error('Decoding failed:', error.message);
+                        return null; // 如果解码失败，返回 null
+                    }
+                }else {
+                    msg = encodeURIComponent(inputMessage);
+                }
+            } catch (error) {
+                // if (error instanceof URIError) {
+                // }else if (error instanceof TypeError) {
+                // }
+                console.log(error.name);
+                console.log(error.message);
+                console.log(error.stack);
+            }
+
+            return { result, msg, copy: msg };
+        };
+
+        window.SharedContent.resultMethod = (inputMessage ,istest) =>{
+            if(istest){
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: inputMessage, type: "sent" }
+                ]);
+            }
+
+            const msg = URLToStringToURL(inputMessage);
+            if(msg === null){
+                setTimeout(() => {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        comment1
+                    ]);
+                }, 1000);
+            }else if(msg.result === 'error' || istest){
+                setTimeout(() => {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { text: msg.msg, type: "received"}
+                    ]);
+                }, 1000);
+            }else if(msg.result === 'ok'){
+                setTimeout(() => {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { text: msg.msg, type: "received cancopy", icon: "fa-solid fa-copy", isHTML: true, copy: msg.copy}
+                    ]);
+                }, 1000);
+            }
+        }
+
+        return (
+            <div className="container">
+                <div className="link-area" dangerouslySetInnerHTML={{ __html: subject }}></div>
+                <div className="chat-box" id="chatBody">
+                {messages.map((msg, index) => (
+                    <div key={index} className={`message ${msg.type}`}
+                    onClick={msg.copy && msg.type.includes("cancopy") ? 
+                        () => window.SharedContent.handleCopy(msg.copy) : undefined}>{msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
+                    {msg.isHTML ? (
+                        <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
+                    ) : (
+                        msg.text
+                    )}
+                    </div>
+                ))}
+                </div>  
+                <div className="input-area">
+                <input
+                    className="input-message"
+                    id="messageInput"
+                    placeholder="輸入消息..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                />
+                <button className="send-button" onClick={handleSendMessage}>
+                    Send
+                </button>
+                </div>
+            </div>
+        );
+    };
+
+    // 主 App 組件
+    const App = ({subject}) => {
+      React.useEffect(() => {
+        document.title = subject; // 設置動態標題
+      }, [subject]);
+
+      return (
+        <React.Fragment>
+          <Container subject='字符串和URL編碼的相互转换方式<br>convert URL to string！'/>
+        </React.Fragment>
+      );
+    };
+
+    // 渲染 App 組件到 DOM
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App subject='字符串和URL編碼的相互转换方式 convert URL to string！'/>);
+  </script>
+</body>
+</html>

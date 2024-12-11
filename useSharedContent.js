@@ -1,5 +1,5 @@
 window.SharedContent = {
-    comment2:{ text: "搜尋其他功能類的關鍵字：(home、back)、(knowledge、point)、(sample、ex)、(rm、remove)、feedback、test", type: "received" 
+    comment2:{ text: "搜尋其他功能類的關鍵字：(home、back)、(knowledge、point)、(sample、ex)、(rm、remove、clear)、feedback、test", type: "received" 
 
     },
     scrollToBottom: (elementId) => {
@@ -53,7 +53,7 @@ window.SharedContent = {
         }else if (inputMessage === "feedback") {
             window.SharedContent.sendEmail(subject, setMessages);
     
-        } else if (inputMessage === "rm" || inputMessage === "remove") {
+        } else if (inputMessage === "rm" || inputMessage === "remove" || inputMessage === "clear") {
             setMessages([]); // 清除訊息列表
     
         } else if (inputMessage === "point") {
