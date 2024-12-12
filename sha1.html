@@ -19,27 +19,25 @@
 
     <script type="text/babel">
     const Container = ({subject}) => {
-        const comment1 = { text: "請輸入字符串，我將幫你哈希成MD5(可加鹽)。", type: "received", isHTML: true };
+        const comment1 = { text: "請輸入字符串，我將幫你哈希成SHA-1。", type: "received", isHTML: true };
 
         const pointMessages = [
-            { text: `MD5訊息摘要演算法（英語：MD5 Message-Digest Algorithm），一種被廣泛使用的密碼雜湊函數，可以產生出一個128位元（16位元組）的散列值（hash value），用於確保信息傳輸完整一致。MD5由羅納德·李維斯特設計，於1992年公開，用以取代MD4演算法。這套演算法的程序在 RFC 1321 中被加以規範。
-    將數據（如一段文字）運算變為另一固定長度值，是雜湊算法的基礎原理。`,
-                type: "received", icon: "fa-solid fa-mug-hot", isHTML: true },
-            { text: `為什麼需要加鹽？<br>
-1. 防止彩虹表攻擊：彩虹表是一種預先計算好的雜湊值對應明文的查找表。通過加鹽，即使兩個用戶使用相同的密碼，因為鹽不同，生成的雜湊值也會不同，這樣可以有效防止彩虹表攻擊。<br>
-2. 增加破解難度：加鹽後，即使攻擊者獲得了雜湊值，也無法直接通過查找表或暴力破解來獲得原始密碼。這樣使得破解過程變得更加困難和耗時。<br>
-3. 提高安全性：每個用戶都可以擁有唯一的鹽，這樣即使使用相同密碼的用戶，其雜湊值也會不同，進一步提高了安全性。`,
+            { text: `SHA-1 (Secure Hash Algorithm 1)<br>
+概念：<br>
+SHA-1 是由美國國家安全局（NSA）設計並由美國國家標準技術研究所（NIST）發布的安全散列算法。它能將任意長度的輸入數據轉換為固定長度的 160 位（20 字節）散列值，通常以 40 個十六進制數字表示。<br>
+特性：<br>
+抗碰撞性：SHA-1 的設計目的是為了防止不同輸入生成相同的散列值，但隨著時間的推移，發現了多種漏洞，使其容易受到碰撞攻擊。<br>
+速度：SHA-1 的計算速度較快，但這也使其更容易受到暴力破解攻擊。<br>
+安全性問題：由於 SHA-1 的安全性已被質疑，許多組織和標準已經不再推薦使用它。<br>
+應用：<br>
+SHA-1 曾廣泛應用於數字簽名、SSL/TLS 證書和版本控制系統等領域，但由於其安全性問題，許多應用已轉向使用更安全的哈希算法，如 SHA-256。`,
                 type: "received", icon: "fa-solid fa-mug-hot", isHTML: true },
         ];
 
         const exampleMessages = [
-            { text: "範例1(不加鹽)如下：", type: "received", icon: "fa-solid fa-book" },
-            { text: "範例2(加鹽)如下：", type: "received", icon: "fa-solid fa-book" },
-            { text: "範例3(自帶鹽)如下：", type: "received", icon: "fa-solid fa-book" },
         ];
 
         const testMessages = [
-            '123','salt,123','salt,hiqdka42bmk,123'
         ]
 
         const [messages, setMessages] = React.useState([
@@ -56,7 +54,6 @@
         const [inputMessage, setInputMessage] = React.useState("");
         
         const handleSendMessage = () => {
-            
             window.SharedContent.handleSendMessage(subject, inputMessage, setMessages, setInputMessage,
                                                     pointMessages, exampleMessages, testMessages
             );
@@ -64,65 +61,25 @@
 
         // 滾動功能
         React.useEffect(() => {
-            
             window.SharedContent.scrollToBottom("chatBody");
         }, [messages]);
 
+
         window.SharedContent.resultMethod = (inputMessage ,istest) =>{
             if(istest){
-                let a = inputMessage;
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { text: a, type: "sent" }
+                    { text: inputMessage, type: "sent" }
                 ]);
             }
 
-            // 計算 MD5 值並生成對應的變體陣列
-            const messageTextArray = ['32位[大]' ,'32位[小]' ,'16位[大]' ,'16位[小]'];
-            
-            let salt = '';
-            if(inputMessage.includes("salt")){
-                const array = inputMessage.split(",");
-                if(array.length === 3){
-                    salt = array[2];
-                    inputMessage = array[3];
-                }else if(array.length === 2){
-                    salt = Math.random().toString(36).substring(2, 15);
-                    inputMessage = array[2];
-                }else{
-                    setTimeout(() => {
-                        setMessages((prevMessages) => [
-                            ...prevMessages,
-                            { text: `參數有誤，請參考範例`, type: "received"}
-                        ]);
-                    }, 1000);
-                    return;
-                }
-                setTimeout(() => {
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { text: `加鹽：<br>${salt}`, type: "received cancopy", icon: "fa-solid fa-copy", isHTML: true, copy:salt}
-                    ]);
-                }, 1000); // 避免同時設置，根據 index 添加延遲
-            }
-            
-            const fullMD5 = CryptoJS.MD5(inputMessage+salt).toString();
-            const md5Array = [
-                fullMD5.toUpperCase(), // 32位[大]
-                fullMD5.substring(8, 24).toUpperCase(), // 16位[大]
-                fullMD5.toLowerCase(), // 32位[小]
-                fullMD5.substring(8, 24).toLowerCase() // 16位[小]
-            ];
-
-            // 使用 forEach 處理每個 messageTextArray 的元素
-            messageTextArray.forEach((label, index) => {
-                setTimeout(() => {
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { text: `${label}<br>${md5Array[index]}`, type: "received cancopy", icon: "fa-solid fa-copy", isHTML: true, copy: md5Array[index]}
-                    ]);
-                }, 1000); // 避免同時設置，根據 index 添加延遲
-            });
+            const sha1Hash = CryptoJS.SHA1(inputMessage).toString();
+            setTimeout(() => {
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: sha1Hash, type: "received cancopy", icon: "fa-solid fa-copy", isHTML: true, copy: sha1Hash}
+                ]);
+            }, 1000); // 避免同時設置，根據 index 添加延遲
         }
 
         return (
@@ -166,14 +123,14 @@
 
       return (
         <React.Fragment>
-          <Container subject='哈希（Hash）<br>將字串轉換為MD5'/>
+          <Container subject='哈希（Hash）<br>將字串轉換為SHA-1 (Secure Hash Algorithm 1)'/>
         </React.Fragment>
       );
     };
 
     // 渲染 App 組件到 DOM
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App subject='哈希（Hash）將字串轉換為MD5'/>);
+    root.render(<App subject='哈希（Hash）將字串轉換為SHA-1 (Secure Hash Algorithm 1)'/>);
   </script>
 </body>
 </html>

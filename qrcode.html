@@ -67,14 +67,20 @@
         ]
 
         const [messages, setMessages] = React.useState([
-        comment1,window.SharedContent.comment2
             // default messages
         ]);
+        
+        React.useEffect(() => {
+            window.SharedContent.addcomment2();
+    
+    const combinedMessages = [comment1, ...window.SharedContent.comment2];
+    setMessages(combinedMessages);
+        }, []);
     
         const [inputMessage, setInputMessage] = React.useState("");
         
         const handleSendMessage = () => {
-            // 調用 common.js 中的全局方法
+            
             window.SharedContent.handleSendMessage(subject, inputMessage, setMessages, setInputMessage,
                                                     pointMessages, exampleMessages, testMessages
             );
@@ -82,7 +88,7 @@
         
         // 滾動功能
         React.useEffect(() => {
-            // 調用全局的滾動方法
+            
             window.SharedContent.scrollToBottom("chatBody");
         }, [messages]);
 
@@ -172,14 +178,14 @@
 
       return (
         <React.Fragment>
-          <Container subject='create a qrcode！'/>
+          <Container subject='生成一個二維條碼<br>generate a qrcode'/>
         </React.Fragment>
       );
     };
 
     // 渲染 App 組件到 DOM
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App subject='create a qrcode！'/>);
+    root.render(<App subject='生成一個二維條碼 generate a qrcode'/>);
   </script>
 </body>
 </html>

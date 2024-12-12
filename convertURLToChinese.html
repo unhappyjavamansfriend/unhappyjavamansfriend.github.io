@@ -26,29 +26,27 @@
         ];
 
         const exampleMessages = [
-            { text: "範例1如下：", type: "received", icon: "fa-solid fa-book" },
-            { text: "%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B", type: "sent" },
-            { text: "速度與激情9", type: "received"},
-            { text: "範例2如下：", type: "received", icon: "fa-solid fa-book" },
-            { text: "我有冰淇淋", type: "sent" },
-            { text: "%E9%80%9F%E5%BA%A6%E8%88%87%E6%BF%80%E6%83%859", type: "received"},
         ];
 
         const testMessages = [
-            '%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B','%21%40%23%24%25%5E%26%2A','!@#$%^&*()','%E4%BD%A0%20%E5%A5%BD','%20%20%20','我有冰淇淋','速度%E8%88%87%E6%BF%80%E6%83%859','Hello%E4%BD%A0%E5%A5%BDWorld','%ZZ速度'
+            '%E6%88%91%E6%9C%89%E5%86%B0%E6%B7%87%E6%B7%8B','我有冰淇淋','%21%40%23%24%25%5E%26%2A','!@#$%^&*()','%E4%BD%A0%20%E5%A5%BD','%20%20%20','我有冰淇淋','速度%E8%88%87%E6%BF%80%E6%83%859','Hello%E4%BD%A0%E5%A5%BDWorld','%ZZ速度'
         ]
 
         const [messages, setMessages] = React.useState([
-        comment1,window.SharedContent.comment2
             // default messages
         ]);
+        
+        React.useEffect(() => {
+            window.SharedContent.addcomment2();
     
-        const [unit, setUnit] = React.useState(""); // 儲存當前使用的單位
+    const combinedMessages = [comment1, ...window.SharedContent.comment2];
+    setMessages(combinedMessages);
+        }, []);
+    
         const [inputMessage, setInputMessage] = React.useState("");
-        const [firstInput, setFirstInput] = React.useState(null); // 儲存第一次輸入的數值
         
         const handleSendMessage = () => {
-            // 調用 common.js 中的全局方法
+            
             window.SharedContent.handleSendMessage(subject, inputMessage, setMessages, setInputMessage,
                                                     pointMessages, exampleMessages, testMessages
             );
@@ -56,7 +54,7 @@
 
         // 滾動功能
         React.useEffect(() => {
-            // 調用全局的滾動方法
+            
             window.SharedContent.scrollToBottom("chatBody");
         }, [messages]);
 
@@ -127,7 +125,8 @@
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.type}`}
                     onClick={msg.copy && msg.type.includes("cancopy") ? 
-                        () => window.SharedContent.handleCopy(msg.copy) : undefined}>{msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
+                        () => window.SharedContent.handleCopy(msg.copy) : undefined}>
+                    {msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
                     {msg.isHTML ? (
                         <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
                     ) : (
@@ -160,14 +159,14 @@
 
       return (
         <React.Fragment>
-          <Container subject='字符串和URL編碼的相互转换方式<br>convert URL to string！'/>
+          <Container subject='编码（Encode）<br>字符串和URL編碼的相互转换方式<br>convert URL to string to URL'/>
         </React.Fragment>
       );
     };
 
     // 渲染 App 組件到 DOM
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App subject='字符串和URL編碼的相互转换方式 convert URL to string！'/>);
+    root.render(<App subject='编码（Encode） 字符串和URL編碼的相互转换方式 convert URL to string to URL'/>);
   </script>
 </body>
 </html>

@@ -31,28 +31,28 @@
         ];
 
         const exampleMessages = [
-            { text: "範例1如下：", type: "received", icon: "fa-solid fa-book" },
-            { text: "公分,300,400", type: "sent" },
-            { text: "長：300 公分<br>寬：400 公分<br>計算結果：39.67 坪", type: "received", isHTML: true },
-            { text: "範例2如下：", type: "received", icon: "fa-solid fa-book" },
-            { text: "m,3,4", type: "sent" },
-            { text: "長：3 公尺<br>寬：4 公尺<br>計算結果：39.67 坪", type: "received", isHTML: true },
         ];
 
         const testMessages = [
-            '公分,300,400','　,　, ','cm,　　,123','cm,-155,123','cm,123,asd','cm asd 123','m,１２３,４５６','cm,123,123,123','cm,123,456'
+            '公分,300,400','m,3,4','　,　, ','cm,　　,123','cm,-155,123','cm,123,asd','cm asd 123','m,１２３,４５６','cm,123,123,123','cm,123,456'
         ]
 
         const [messages, setMessages] = React.useState([
             // default messages
         ]);
+        
+        React.useEffect(() => {
+            window.SharedContent.addcomment2();
+    
+    const combinedMessages = [comment1, ...window.SharedContent.comment2];
+    setMessages(combinedMessages);
+        }, []);
     
         const [unit, setUnit] = React.useState(""); // 儲存當前使用的單位
         const [inputMessage, setInputMessage] = React.useState("");
-        const [firstInput, setFirstInput] = React.useState(null); // 儲存第一次輸入的數值
         
         const handleSendMessage = () => {
-            // 調用 common.js 中的全局方法
+            
             window.SharedContent.handleSendMessage(subject, inputMessage, setMessages, setInputMessage,
                                                     pointMessages, exampleMessages, testMessages
             );
@@ -60,7 +60,7 @@
 
         // 滾動功能
         React.useEffect(() => {
-            // 調用全局的滾動方法
+            
             window.SharedContent.scrollToBottom("chatBody");
         }, [messages]);
 
@@ -196,7 +196,8 @@
                 {messages.map((msg, index) => (
                     <div key={index} className={`message ${msg.type}`}
                     onClick={msg.copy && msg.type.includes("cancopy") ? 
-                        () => window.SharedContent.handleCopy(msg.copy) : undefined}>{msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
+                        () => window.SharedContent.handleCopy(msg.copy) : undefined}>
+                    {msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
                     {msg.isHTML ? (
                         <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>
                     ) : (

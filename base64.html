@@ -18,10 +18,10 @@
 
     <script type="text/babel">
     const Container = ({subject}) => {
-        const comment1 = { text: "請輸入Unicode，我將幫你轉換成字符串<br>或是輸入字符串，我將幫你轉換成Unicode。", type: "received", isHTML: true };
+        const comment1 = { text: "請輸入Base64，我將幫你轉換成字符串<br>或是輸入字符串，我將幫你轉換成Base64。", type: "received" , isHTML: true};
 
         const pointMessages = [
-            { text: `Unicode 是一種字符編碼標準，旨在為世界上所有的字符提供唯一的編碼。每個字符都有一個對應的數字編碼，通常以十六進制表示`,
+            { text: `一种将二进制数据转换为ASCII字符的编码方式，常用于电子邮件和数据传输。`,
                 type: "received", icon: "fa-solid fa-mug-hot", isHTML: true },
         ];
 
@@ -29,7 +29,6 @@
         ];
 
         const testMessages = [
-            '我很喜歡冰淇淋',' \\u  asd\\u65E9','\\uZZZZ\\u570B','早上好中國','\\u65E9\\u4E0A\\u597D\\u4E2D\\u570B','\\u4E00\\u9FFF','\\u\\u65E9','asd\\u65E9asd\\u65E9','\\u65E9上好\\u4E2D\\u570B','\\u６２Ｅ９'
         ]
 
         const [messages, setMessages] = React.useState([
@@ -42,7 +41,7 @@
     const combinedMessages = [comment1, ...window.SharedContent.comment2];
     setMessages(combinedMessages);
         }, []);
-    
+        
         const [inputMessage, setInputMessage] = React.useState("");
         
         const handleSendMessage = () => {
@@ -58,31 +57,16 @@
             window.SharedContent.scrollToBottom("chatBody");
         }, [messages]);
 
-        const UnicodeToStringToUnicode = (inputMessage) => {
-            let result = 'ok';
-            let msg = '';
-
-            if (inputMessage.includes('\\u')) {
-                msg = inputMessage.split('\\u').map((code, index) => 
-                    index > 0 && code.length >= 4 && !isNaN(parseInt(code.substring(0, 4), 16)) 
-                        ? String.fromCharCode(parseInt(code.substring(0, 4), 16)) + code.substring(4) // 转换 Unicode 并保留后续字符串
-                        : code // 保留原样
-                )
-                .join(''); // 合并为字符串
-            }else{
-                // 將字符串轉換為 Unicode 編碼格式 (\uXXXX)
-                msg = Array.from(inputMessage)
-                .map(char => {
-                    const codePoint = char.codePointAt(0).toString(16);
-                    return codePoint.length > 4 
-                    ? `\\u{${codePoint}}`
-                    : `\\u${codePoint.padStart(4, '0')}`;
-                })
-                .join('');
+        // 正则表达式匹配 Base64 编码格式
+        const isBase64 = (str) => {
+            const regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$/;
+            if(regex.test(str)){
+                // Base64 转字符串
+                return decodeURIComponent(escape(atob(str)));
             }
-
-            return { result, msg, copy: msg };
-        };
+            // 字符串转 Base64
+            return btoa(unescape(encodeURIComponent(str)));
+        }
 
         window.SharedContent.resultMethod = (inputMessage ,istest) =>{
             if(istest){
@@ -92,23 +76,14 @@
                 ]);
             }
 
-            const msg = UnicodeToStringToUnicode(inputMessage);
+            let msg = isBase64(inputMessage);
 
-            if(msg.result === 'error' || istest){
-                setTimeout(() => {
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { text: msg.msg, type: "received"}
-                    ]);
-                }, 1000);
-            }else if(msg.result === 'ok'){
-                setTimeout(() => {
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { text: msg.msg, type: "received cancopy", icon: "fa-solid fa-copy", isHTML: true, copy: msg.copy}
-                    ]);
-                }, 1000);
-            }
+            setTimeout(() => {
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: msg, type: "received cancopy", icon: "fa-solid fa-copy", isHTML: true, copy: msg}
+                ]);
+            }, 1000);
         }
 
         return (
@@ -152,14 +127,14 @@
 
       return (
         <React.Fragment>
-          <Container subject='编码（Encode）<br>字符串和Unicode的相互转换方式<br>convert unicode to string to unicode'/>
+          <Container subject='编码（Encode）<br>字符串和Base64的相互转换方式<br>convert base64 to string to base64'/>
         </React.Fragment>
       );
     };
 
     // 渲染 App 組件到 DOM
     const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<App subject='编码（Encode） 字符串和Unicode的相互转换方式 convert unicode to string to unicode'/>);
+    root.render(<App subject='编码（Encode） 字符串和base64的相互转换方式 convert base64 to string to base64'/>);
   </script>
 </body>
 </html>
