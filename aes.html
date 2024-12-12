@@ -96,8 +96,6 @@ AES-CBC	必須是 16 字節（128 位）	與塊大小相同`,
         const [messages, setMessages] = React.useState([
             // default messages
         ]);
-        
-        
 
         React.useEffect(() => {
             window.SharedContent.addcomment2();
@@ -119,8 +117,7 @@ AES-CBC	必須是 16 字節（128 位）	與塊大小相同`,
             window.SharedContent.scrollToBottom("chatBody");
         }, [messages]);
 
-
-        const [step, setStep] = React.useState(0); // 初始步驟為1
+        const [step, setStep] = React.useState('setKeyword'); // 初始步驟為1
 
         const [data ,setData] = React.useState("");
         const [ciphertext ,setCiphertext] = React.useState("");
@@ -132,13 +129,15 @@ AES-CBC	必須是 16 字節（128 位）	與塊大小相同`,
 
         const renderOptions = () => {
             
-            if (step === 0) {
+            if (step === 'setKeyword') {
                 return [
-                    { text: "請選擇加密encrypt/解密decrypt", type: "received" },
-                    { text: "encrypt", type: "received active", onClick: () => handleEncryptOrDecrypt("encrypt") },
-                    { text: "decrypt", type: "received active", onClick: () => handleEncryptOrDecrypt("decrypt") },
+                    { text: "請選擇加密encrypt / 解密decrypt", type: "received" },
+                    { text: "encrypt", type: "received active", onClick: () => handleKeyWord("encrypt") },
+                    { text: "decrypt", type: "received active", onClick: () => handleKeyWord("decrypt") },
                 ];
-            }else if (step === 1) {
+            }
+            
+            if (step === 'setData') {
                 let reply = '';
                 if(encryptORdecrypt === 'encrypt'){
                     reply = { text: "請輸入你需要加密的數據", type: "received" };
@@ -146,79 +145,190 @@ AES-CBC	必須是 16 字節（128 位）	與塊大小相同`,
                     reply = { text: "請輸入你需要解密的數據", type: "received" };
                 }
                 return [reply];
-            } else if (step === 2) {
-                return [
-                    { text: "請選擇密鑰長度", type: "received" },
-                    { text: "128", type: "received active", onClick: () => handleKeyLength("128") },
-                    // { text: "192", type: "received active", onClick: () => handleKeyLength("192") },
-                    { text: "256", type: "received active", onClick: () => handleKeyLength("256") },
-                ];
-            } else if (step === 3) {
-                return [
-                    { text: "請選擇工作模式", type: "received" },
-                    { text: "AES-GCM", type: "received active", onClick: () => handleMode("AES-GCM") },
-                    { text: "AES-CBC", type: "received active", onClick: () => handleMode("AES-CBC") },
-                    // { text: "AES-CTR", type: "received active", onClick: () => handleMode("AES-CTR") },
-                    // { text: "AES-CFB", type: "received active", onClick: () => handleMode("AES-CFB") },
-                    // { text: "AES-OFB", type: "received active", onClick: () => handleMode("AES-OFB") },
-                ];
-            } else if (step === 4) {
-                return [
-                    { text: "輸入IV", type: "received active", onClick: () => handleInputIV() },
-                    { text: "生成IV", type: "received active", onClick: () => handleGenerateIV() },
-                ];
-            } else if (step === 6) {
-                handleResult();
+            } 
+
+            if(encryptORdecrypt === 'encrypt'){
+                if (step === 'setKey') {
+                    return [
+                        { text: "請選擇密鑰長度", type: "received" },
+                        { text: "128", type: "received active", onClick: () => handleKey("128") },
+                        { text: "256", type: "received active", onClick: () => handleKey("256") },
+                    ];
+                } 
+
+                if (step === 'setMode') {
+                    return [
+                        { text: "請選擇工作模式", type: "received" },
+                        { text: "AES-GCM", type: "received active", onClick: () => handleMode("AES-GCM") },
+                        { text: "AES-CBC", type: "received active", onClick: () => handleMode("AES-CBC") },
+                    ];
+                } 
+
+
+                if (step === 'setIV') {
+                    return [
+                        { text: "請選擇IV", type: "received" },
+                        { text: "生成IV", type: "received active", onClick: () => handleGenerateIV() },
+                        // { text: "自行輸入", type: "received active", onClick: () => handleInputIV() },
+                    ];
+
+                } 
+                
+            }else if(encryptORdecrypt === 'decrypt'){
+                if (step === 'setMode') {
+                    return [
+                        { text: "請選擇工作模式", type: "received" },
+                        { text: "AES-GCM", type: "received active", onClick: () => setMode("AES-GCM") },
+                        { text: "AES-CBC", type: "received active", onClick: () => setMode("AES-CBC") },
+                    ];
+                } 
+
+                if (step === 'setKey') {
+                    return [{ text: '請輸入你的密鑰', type: "received" }];
+                }
+
+                if (step === 'setIV') {
+                    return [{ text: '請輸入你的IV', type: "received" }];
+                }
+               
             }
-            return [];
+
         };
 
-        const handleEncryptOrDecrypt = (choice) => {
+        // step1: encrypt or decrypt
+        const handleKeyWord = (choice) => {
             setEncryptORdecrypt(choice);
             setMessages((prev) => [...prev, { text: `你選擇了${choice}`, type: "received" }]);
-            setStep(1);
+            setStep('setData');
         };
 
-        const handleKeyLength = (length) => {
+        window.SharedContent.resultMethod = (inputMessage ,istest) =>{
+            if(istest){
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: inputMessage, type: "sent" }
+                ]);
+            }
+
+            if(encryptORdecrypt === 'encrypt'){
+                if(step === 'setData'){
+                    setData(inputMessage);
+                    setStep('setKey');
+                }
+
+            }else if(encryptORdecrypt === 'decrypt'){
+                if(step === 'setData'){
+                    setCiphertext(inputMessage);
+                    setStep('setKey');
+                }
+
+                if(step === 'setKey'){
+                    handleKey2(inputMessage)
+                }
+
+                if(step === 'setIV'){
+                    handleIV();
+                }
+
+            }
+
+            if(step === 'setResult'){
+            }
+
+        }
+
+        const handleKey = (length) => {
             setKeyLength(length);
-            setMessages((prev) => [...prev, { text: `密鑰長度：${length}`, type: "received" }]);
-            setStep(3);
-        };
+            setStep('setMode');
+            setMessages((prev) => [...prev, 
+                { 
+                    text: `密鑰長度：${length}`, 
+                    type: "received cancopy",
+                    icon: "fa-solid fa-copy",
+                    isHTML: true,
+                    onClick: () => window.SharedContent.handleCopy(`keyLength：${length}`)
+                }
+            ]);
+        }
+
+        const handleKey2 = async (inputMessage) => {
+            let keylength = getAesKeyLength(base64ToArrayBuffer(inputMessage));
+            setKeyLength(keylength);
+            let validateResult = await stringToKey(inputMessage ,mode ,keyLength)
+            if(validateResult.valid){
+                setKey(validateResult.message);
+                setMessages((prev) => [...prev, 
+                    { text: '密鑰正確', type: "received" },
+                    { text: `輸入的密鑰：${inputMessage}`, type: "received" }
+                ]);
+                setStep('setIV');
+            }else{
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: validateResult.message , type: "received" }
+                ]);
+            }
+        }
 
         const  handleMode = async (mode) => {
             let generatedKey = "";
             setMode(mode);
-            setMessages((prev) => [...prev, { text: `工作模式：${mode}`, type: "received" }]);
-            // if (mode === "AES-CFB") {
-            //     generatedKey = await generateAESCFBKey(keyLength);
-            // } else if (mode === "AES-OFB") {
-            //     generatedKey = await generateAESOFBKey(keyLength);
-            // } else if (mode === "AES-CTR") {
-            //     generatedKey = await generateAESCTRKey(keyLength);
+            setMessages((prev) => [...prev, 
+                { 
+                    text: `工作模式：${mode}`,
+                    type: "received cancopy" ,
+                    icon: "fa-solid fa-copy",
+                    isHTML: true,
+                    onClick: () => window.SharedContent.handleCopy(`mode：${mode}`)
+                }
+            ]);
+
             if (mode === "AES-GCM") {
                 generatedKey = await generateAESGCMKey(keyLength);
             } else if (mode === "AES-CBC") {
                 generatedKey = await generateAESCBCKey(keyLength);
             }
             setKey(generatedKey);
-            console.log(keyToString(generatedKey));
-            // setMessages(async (prev) => [...prev, { text: `生成的Key：${generatedKey}`, type: "received" }]);
-            setStep(4);
+            let keyStr = await keyToString(generatedKey);
+            setMessages((prev) => [...prev, 
+                {   
+                    text: `生成的密鑰：${keyStr}`,
+                    type: "received cancopy",
+                    icon: "fa-solid fa-copy",
+                    isHTML: true,
+                    onClick: () => window.SharedContent.handleCopy(`key：${keyStr}`)
+                }
+            ]);
+            setStep('setIV');
         };
+
+        const handleIV = async (choice) => {
+            let validateResult = await validateIV(inputMessage ,mode);
+            console.log(`inputMessage:${inputMessage}`);
+            console.log(`validateResult valid:${validateResult.valid}`);
+            console.log(`validateResul tmessage:${validateResult.message}`);
+            if(validateResult.valid){
+                setKey(validateResult.message);
+                setMessages((prev) => [...prev, 
+                    { text: 'IV正確', type: "received" },
+                ]);
+                handleResult(validateResult.iv);
+            }else{
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { text: validateResult.message , type: "received" }
+                ]);
+            }
+        }
 
         const handleGenerateIV = () => {
             let generatedIV = "";
-            // if (mode === "AES-CFB") {
-            //     generatedIV = ivAESCFB();
-            // } else if (mode === "AES-OFB") {
-            //     generatedIV = ivAESOFB();
-            // } else if (mode === "AES-CTR") {
-            //     generatedIV = ivAESCTR();
             if (mode === "AES-GCM") {
                 generatedIV = ivAESGCM();
             } else if (mode === "AES-CBC") {
                 generatedIV = ivAESCBC();
             }
+            // console.log(`generatedIV:${arrayBufferToBase64(generatedIV)}`)
 
             setIV(generatedIV);
             setMessages((prev) => [...prev, 
@@ -227,100 +337,66 @@ AES-CBC	必須是 16 字節（128 位）	與塊大小相同`,
                     type: "received cancopy",
                     icon: "fa-solid fa-copy",
                     isHTML: true,
-                    onClick: () => window.SharedContent.handleCopy(arrayBufferToBase64(generatedIV))
+                    onClick: () => window.SharedContent.handleCopy(`IV：${arrayBufferToBase64(generatedIV)}`,)
                 }
             ]);
-            setStep(6);
+            handleResult(generatedIV);
         };
-        
-        const handleInputIV = () => {
-            setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { text: '請輸入你的IV', type: "received" }
-            ]);
-            setStep(5);
-        }
 
-        const handleResult = async () => {
-            let data = '';
-            let ciphertext = '';
+        const handleResult = async (generatedIV) => {
             if(encryptORdecrypt === 'encrypt'){
+                let ciphertext = '';
                 if (mode === "AES-GCM") {
-                    ciphertext = await encryptAESGCM(key ,iv ,data);
+                    // console.log(`handleResult:${key}、${generatedIV}、${data}`);
+                    ciphertext = await encryptAESGCM(key, generatedIV, data);
+                    console.log(`ciphertext:${ciphertext}`);
+                    // ciphertext = await encryptAESGCM(key ,iv ,data);
+
                 } else if (mode === "AES-CBC") {
-                    ciphertext = await encryptAESCBC(key ,iv ,data);
+                    // console.log(`handleResult:${key}、${generatedIV}、${data}`);
+                    ciphertext = await encryptAESCBC(key ,generatedIV ,data);
+                    console.log(`ciphertext:${ciphertext}`);
                 }
-                setCiphertext(ciphertext);
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { 
+                // setCiphertext(ciphertext);
+                // console.log(`arrayBufferToBase64:${arrayBufferToBase64(ciphertext)}`)
+                setMessages((prev) => [...prev, 
+                    {   
                         text: `加密後：${arrayBufferToBase64(ciphertext)}` ,
                         type: "received cancopy",
                         icon: "fa-solid fa-copy",
                         isHTML: true,
-                        onClick: () => window.SharedContent.handleCopy(arrayBufferToBase64(ciphertext))
-                    }
+                        onClick: () => window.SharedContent.handleCopy(`ciphertext：${arrayBufferToBase64(ciphertext)}`)
+                    },
+                    {  text: '加密成功' ,type: "received"}
                 ]);
+
             }else if(encryptORdecrypt === 'decrypt'){
+                let data = '';
+                const ciphertextObj = Uint8Array.from(atob(ciphertext), c => c.charCodeAt(0)); 
+
                 if (mode === "AES-GCM") {
-                    data = await decryptAESGCM(key, ciphertext, iv);
+                    // console.log(`handleResult:${key}、${ciphertext}、${generatedIV}`)
+                    data = await decryptAESGCM(key, ciphertextObj, generatedIV);
+                    console.log(`data:${data}`);
+
                 } else if (mode === "AES-CBC") {
-                    data = await decryptAESCBC(key, ciphertext, iv);
+                    // console.log(`handleResult:${key}、${ciphertext}、${generatedIV}`)
+                    data = await encryptAESCBC(key ,ciphertextObj ,generatedIV);
+                    console.log(`data:${data}`);
                 }
-                setData(data);
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { 
+
+                setMessages((prev) => [...prev, 
+                    {   
                         text: `解密後：${data}` ,
                         type: "received cancopy",
                         icon: "fa-solid fa-copy",
-                        isHTML: true, 
+                        isHTML: true,
                         onClick: () => window.SharedContent.handleCopy(data)
-                    }
+                    },
+                    {  text: '解密成功' ,type: "received"}
                 ]);
             }
-            setStep(7);
-        }
-
-        
-        window.SharedContent.resultMethod = (inputMessage ,istest) =>{
-            if(istest){
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { text: inputMessage, type: "sent" }
-                ]);
-            }
-            if(step === 1){
-                if(encryptORdecrypt === 'encrypt'){
-                    setData(inputMessage);
-                }else if(encryptORdecrypt === 'decrypt'){
-                    setCiphertext(inputMessage);
-                }
-                setStep(2);
-            }else if(step === 5){
-                const validateResult = validateIV(inputMessage ,mode)
-                if(validateResult.valid){
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { 
-                            text: validateResult.message ,
-                            type: "received",
-                            icon: "fa-solid fa-copy",
-                            isHTML: true,
-                            onClick: () => window.SharedContent.handleCopy(validateResult.message)
-                        }
-                    ]);
-                    setIV(inputMessage);
-                    setStep(6);
-                    // handleResult();
-                }else{
-                    setMessages((prevMessages) => [
-                        ...prevMessages,
-                        { text: validateResult.message , type: "received" }
-                    ]);
-                    handleInputIV();
-                }
-            }
+            setStep('setKeyword');
         }
 
         return (
