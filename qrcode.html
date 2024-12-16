@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-    <script src="useSharedContent.js"></script>
+    <script src="useSharedContent_v1.js"></script>
 </head>
 <body>
     <div id="root"></div>
@@ -72,9 +72,8 @@
         
         React.useEffect(() => {
             window.SharedContent.addcomment2();
-    
-    const combinedMessages = [comment1, ...window.SharedContent.comment2];
-    setMessages(combinedMessages);
+            const combinedMessages = [comment1, ...window.SharedContent.comment2];
+            setMessages(combinedMessages);
         }, []);
     
         const [inputMessage, setInputMessage] = React.useState("");
@@ -88,7 +87,6 @@
         
         // 滾動功能
         React.useEffect(() => {
-            
             window.SharedContent.scrollToBottom("chatBody");
         }, [messages]);
 

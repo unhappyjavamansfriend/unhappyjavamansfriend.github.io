@@ -12,7 +12,7 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/babel-standalone@6.26.0/babel.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
-    <script src="useSharedContent.js"></script>
+    <script src="useSharedContent_v1.js"></script>
     <script src="aes.js"></script>
     <style>
         .sent ,.received {
@@ -99,7 +99,6 @@ AES-CBC	必須是 16 字節（128 位）	與塊大小相同`,
 
         React.useEffect(() => {
             window.SharedContent.addcomment2();
-            
             const combinedMessages = [comment1, ...window.SharedContent.comment2];
             setMessages(combinedMessages);
         }, []);
