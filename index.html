@@ -23,20 +23,18 @@
         const [inputMessage, setInputMessage] = React.useState("");
         
         const hrefArray = [
-            {key: "taiwanese ping" ,decribe: "平方公尺換算台坪數" ,href: "TaiwanesePing.html"},
-            // {key: "taiwanese ping" ,decribe: "平方公尺換算台坪數" ,href: "TaiwanesePing.html"},
-            {key: "hex" ,decribe: "编码（Encode）十六進制" ,href: "convertHexadecimalToChinese.html"},
-            // {key: "hexadecimal" ,decribe: "编码（Encode）十六進制" ,href: "convertHexadecimalToChinese.html"},
-            {key: "unicode" ,decribe: "编码（Encode）unicode \\u" ,href: "convertUnicodeToChinese.html"},
-            // {key: "%" ,decribe: "编码（Encode）URL編碼 百分比編碼" ,href: "convertURLToChinese.html"},
-            {key: "URL" ,decribe: "编码（Encode）URL編碼 百分比編碼" ,href: "convertURLToChinese.html"},
-            {key: "base64" ,decribe: "编码（Encode）Baes64" ,href: "base64.html"},
-            {key: "md5" ,decribe: "哈希（Hash）MD5" ,href: "md5.html"},
-            {key: "sha1" ,decribe: "哈希（Hash）SHA-1" ,href: "sha1.html"},
-            {key: "sha256" ,decribe: "哈希（Hash）SHA-256" ,href: "sha256.html"},
-            {key: "aes" ,decribe: "加密（Encrypt）AES" ,href: "aes.html"},
-            {key: "rsa" ,decribe: "加密（Encrypt）RSA" ,href: "rsa.html"},
-            {key: "qrcode" ,decribe: "QR code 二維條碼" ,href: "qrcode.html"},
+            {key: "taiwanesePing" ,decribe: "平方公尺換算台坪數" ,href: "common.html" ,subject: '平方公尺換算台坪數<br>sqm to Taiwanese ping！'},
+            // {key: "test2" ,decribe: "test2" ,href: "common.html" ,js: "" ,subject: ''},
+            {key: "hex" ,decribe: "编码（Encode）十六進制" ,href: "convertHexadecimalToChinese.html" ,js: "convertHexadecimalToChinese.js"},
+            {key: "unicode" ,decribe: "编码（Encode）unicode \\u" ,href: "convertUnicodeToChinese.html" ,js: "convertUnicodeToChinese.js"},
+            {key: "URL" ,decribe: "编码（Encode）URL編碼 百分比編碼" ,href: "convertURLToChinese.html" ,js: "convertURLToChinese.js"},
+            {key: "base64" ,decribe: "编码（Encode）Baes64" ,href: "base64.html" ,js: "base64.js"},
+            {key: "md5" ,decribe: "哈希（Hash）MD5" ,href: "md5.html" ,js: "md5.js"},
+            {key: "sha1" ,decribe: "哈希（Hash）SHA-1" ,href: "sha1.html" ,js: "sha1.js"},
+            {key: "sha256" ,decribe: "哈希（Hash）SHA-256" ,href: "sha256.html" ,js: "sha256.js"},
+            {key: "aes" ,decribe: "加密（Encrypt）AES" ,href: "aes.html" ,js: "aes.js"},
+            //{key: "rsa" ,decribe: "加密（Encrypt）RSA" ,href: "rsa.html"},
+            {key: "qrcode" ,decribe: "QR code 二維條碼" ,href: "qrcode.html" ,js: "qrcode.js"},
             {key: "encode" ,decribe: `编码（Encode）<br>
             定义：编码是将数据从一种格式转换成另一种格式的过程，通常是为了便于存储或传输。编码过程是可逆的，即可以通过相应的方法将编码后的数据还原为原始数据。<br>
             用途：<br>
@@ -79,13 +77,13 @@
         hrefArray.forEach(item => {
             if(!item.hrefArray){
                 // console.log(item.key)
-                comment1.push({ text: `${item.decribe} 請輸入 '${item.key}'`, type: "received" ,isHTML: true})
-
+                comment1.push({ text: `${item.decribe} 請輸入 '${item.key}'`, type: "received" ,isHTML: true ,link: item.href ,key: item.key ,subject:item.subject})
             }
             map.set(item.key ,item);
         })
 
         const handleSendMessage = () => {
+            if(inputMessage.trim() === '')return;
             setMessages(prevMessages => [
                 ...prevMessages,
                 { text: inputMessage, type: "sent" }
@@ -137,7 +135,7 @@
                     {msg.icon && <i className={msg.icon}></i>} {/* 顯示圖標 */}
                     {msg.link 
                         ? (
-                        <a href={msg.link} className="icon-link">{msg.text}</a> // 超連結
+                        <a href={`${msg.link}?subject=${msg.subject}&key=${msg.key}`} className="icon-link">{msg.text}</a> // 超連結
                     ) : (
                         msg.isHTML ? (
                             <span dangerouslySetInnerHTML={{ __html: msg.text }}></span>

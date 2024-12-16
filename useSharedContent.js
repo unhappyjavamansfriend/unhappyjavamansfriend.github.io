@@ -1,10 +1,10 @@
 window.SharedContent = {
     hrefArray: [
-        {key: "home,back" ,decribe: "返回首頁"},
-        {key: "wtf,retrieval,points" ,decribe: "相關訊息"},
-        {key: "ex,sample,test" ,decribe: "範例"},
-        {key: "rm,remove,clear" ,decribe: "清除所有訊息"},
-        {key: "feedback" ,decribe: "反饋問題"},
+        {key: "home,back" ,decribe: "返回首頁" ,setmessage: 'home'},
+        {key: "wtf,retrieval,points" ,decribe: "相關訊息" ,setmessage: 'points'},
+        {key: "ex,sample,test" ,decribe: "範例" ,setmessage: 'sample'},
+        {key: "rm,remove,clear" ,decribe: "清除所有訊息" ,setmessage: 'remove'},
+        {key: "feedback" ,decribe: "反饋問題" ,setmessage: 'feedback'},
     ],
 
     comment2:[],
@@ -12,15 +12,14 @@ window.SharedContent = {
     addcomment2: () => {
         window.SharedContent.comment2.push({ text: "搜尋其他功能類的關鍵字：", type: "received" });
         window.SharedContent.hrefArray.forEach(item => {
-            window.SharedContent.comment2.push({text: `${item.decribe} 請輸入 '${item.key}'`, type: "received" })
+            window.SharedContent.comment2.push(
+                {
+                    text: `${item.decribe} 請輸入 '${item.key}'`,
+                    type: "received keyword" ,
+                    setmessage: item.setmessage,
+                }
+            )
         })
-    },
-
-    scrollToBottom: (elementId) => {
-        const chatBody = document.getElementById(elementId);
-        if (chatBody) {
-            chatBody.scrollTop = chatBody.scrollHeight; // 滾動到底部
-        }
     },
 
     handleCopy: (text) => {
@@ -46,7 +45,7 @@ window.SharedContent = {
         }, 1000); // 模擬延遲回覆
     },
 
-    resultMethod: (inputMessage ,istest) =>{
+    resultMethod: (setMessages ,inputMessage ,istest) =>{
     },
 
     handleSendMessage: (subject, inputMessage, setMessages, setInputMessage ,
@@ -64,7 +63,7 @@ window.SharedContent = {
         if(inputMessage === "home" || inputMessage === "back"){
             window.location.href = 'index.html';
     
-        }else if (inputMessage === "feedback") {
+        } else if (inputMessage === "feedback") {
             window.SharedContent.sendEmail(subject, setMessages);
     
         } else if (inputMessage === "rm" || inputMessage === "remove" || inputMessage === "clear") {
@@ -82,22 +81,22 @@ window.SharedContent = {
                 exampleMessages.forEach((msg, index) => {
                     setTimeout(() => {
                         setMessages((prevMessages) => [...prevMessages, msg]);
-                        window.SharedContent.resultMethod(testMessages[index]  ,true);
+                        window.SharedContent.resultMethod(setMessages ,testMessages[index]  ,true);
                     }, 1500 * (index + 1));
                 });
 
             }else{
                 testMessages.forEach((msg, index) => {
                     setTimeout(() => {
-                        window.SharedContent.resultMethod(testMessages[index]  ,true);
+                        window.SharedContent.resultMethod(setMessages ,testMessages[index]  ,true);
                     }, 1500 * (index + 1));
                 });
 
             }
         } else {
-            window.SharedContent.resultMethod(inputMessage ,false);
+            window.SharedContent.resultMethod(setMessages ,inputMessage ,false);
         }
         
         setInputMessage(""); // 清空輸入框
-    }
+    },
 };
