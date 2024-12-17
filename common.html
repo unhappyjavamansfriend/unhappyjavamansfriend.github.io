@@ -110,7 +110,7 @@
 
             React.useEffect(() => {
                 window.SharedContent.addcomment2();
-                const combinedMessages = [comment1, ...window.SharedContent.comment2];
+                const combinedMessages = [...window.SharedContent.comment2];
                 setMessages(combinedMessages);
             }, []);
 
