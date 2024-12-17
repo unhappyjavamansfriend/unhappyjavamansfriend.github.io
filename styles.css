@@ -75,14 +75,50 @@ a{
     padding: 10px 15px; /* 按鈕內邊距 */
 }
 
-.title ,.example ,.explain ,.type{
+[class^="message received cancopy"] ,[class^="message received keyword"]{
     cursor: pointer;
 }
 
-[class^="message received canCopy"] {
-    cursor: pointer;
+
+/* 带有 "三点输入中" 动画效果 start */
+.typing-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; /* 圆点之间的间距 */
+    height: 30px; /* 控制整体高度 */
 }
 
-[class^="message received canRemove canCopy"] {
-    cursor: pointer;
+.typing-indicator span {
+    width: 8px;
+    height: 8px;
+    background-color: #ccc; /* 圆点的颜色 */
+    border-radius: 50%; /* 圆点形状 */
+    animation: typing 1.5s infinite ease-in-out;
 }
+
+/* 单个圆点的延迟动画 */
+.typing-indicator span:nth-child(1) {
+    animation-delay: 0s;
+}
+.typing-indicator span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.typing-indicator span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* 定义动画 */
+@keyframes typing {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.3;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+/* 带有 "三点输入中" 动画效果 end */
