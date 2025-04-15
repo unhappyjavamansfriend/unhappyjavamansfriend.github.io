@@ -48,18 +48,22 @@
     .generateQRCodeBtn:hover {
       background: #64ffdd;
     }
+    @media (max-width: 768px){
+      .container {
+        width: 75%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-  <h1>QR Code 生成器</h1>
-  <div class="input-container">
-
-  <input type="text" id="text" placeholder="輸入網址或文字">
-  <button class="generateQRCodeBtn" onclick="generateQRCode()">生成 QRCode</button>
-</div>
-  <canvas id="qrcode"></canvas>
-</div>
+    <h1>QR Code 生成器</h1>
+    <div class="input-container">
+      <input type="text" id="text" placeholder="輸入網址或文字">
+      <button class="generateQRCodeBtn" onclick="generateQRCode()">生成 QRCode</button>
+    </div>
+    <canvas id="qrcode"></canvas>
+  </div>
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <script>
 function generateQRCode() {
