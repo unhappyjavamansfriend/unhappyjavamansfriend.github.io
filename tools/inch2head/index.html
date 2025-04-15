@@ -1,0 +1,99 @@
+<html><head>
+  <title>自助裁切大頭照</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+  <script src="https://s1031432.github.io/yctest/js/getDateTime.js"></script>
+
+  <link rel="stylesheet" href="https://s1031432.github.io/yctest/css/cropper.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <link href="https://s1031432.github.io/yctest/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+
+    body {
+      font-family: "Indie Flower", serif;
+      background-color: #2C2C2C;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      /* height: 100vh; */
+      /* margin: 0; */
+    }
+
+    .container {
+      background-color: #2C2C2C;
+      color: #e0e0e0;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+
+
+    .photo{
+        border: 2px white solid;
+    }
+    .step2{
+        background-color: #2C2C2C;
+        color: #e0e0e0;
+    }
+    #save_img{
+        border: 2px white solid;
+    }
+  </style>
+</head>
+<!-- https://s1031432.github.io/yctest/inch2_head2.html -->
+<body>
+        <div class="yt-row-container">
+            <div class="yt-row" tabindex="-1">
+                <div class="yt-card yt-card-width" id="inch2_head">
+                    <div class="title">
+                        <h3>點我產生２吋大頭照</h3>
+                    </div>
+                    <div class="photo">
+                        <img src="./img/inch2_head.jpg">
+                    </div>
+                    <div class="button">
+                        點我上傳照片
+                    </div>
+                </div>
+            </div>
+        </div>
+  <div class="container" style="text-align:center; ">
+      <div class="button-row">
+          <label class="step2" style="display:none;">縮放</label>
+              <input id="zoom_bar" class="step2" type="range" min="-100" max="100" value="0" step="1" style="display:none;">
+          <div style="display:flex; justify-content:center;margin-top:10px;">
+              <button id="button" class="btn btn-primary step2" type="button" style="margin:0 auto; display:none;">完成裁切</button>
+          </div>
+          
+      </div>
+      <div id="yc" style="max-width:500px; margin:0 auto;">
+
+          <canvas id="canvas" width="1800" height="1200" style="display:none;"></canvas>
+      </div>
+      <div id="crop" style="display:none;">
+          You can't see me.
+      </div>
+      <div class="mobile">
+          <input id="upload_img" style="display:none;" type="file" accept="image/*" hidden="">
+          <img id="image" src="" alt="Picture" hidden="">
+      </div>
+  </div>
+
+
+<script src="./js/cropper.js"></script>
+<script src="./js/yt_crop2_head.js"></script>
+<script>
+
+function add_line(){
+  x = $(".cropper-crop-box").css("transform").split(", ")[4] || 0;
+  y = $(".cropper-crop-box").css("transform").split(", ")[5].split(")")[0] || 0;
+  h = document.getElementsByClassName('cropper-face')[0].clientHeight;
+  w = document.getElementsByClassName('cropper-face')[0].clientWidth;
+
+  $(".face_line").remove();
+  $(".cropper-crop-box").append(`<div class='face_line' style="z-index:99999; position:absolute; height:50px; text-align:center; pointer-events:none; top:${0-50+20}px; left:${w*0.2}px; width:${w*0.6}px; border-bottom:${10}px #ff28 dashed; opacity:0.7;"><h1 style="margin:0; color: #ff28;">頭頂</h1></div>`);
+  $(".cropper-crop-box").append(`<div class='face_line' style="z-index:99999; position:absolute; height:50px; text-align:center; pointer-events:none; top:${h-h*0.18}px; left:${w*0.3}px; width:${w*0.4}px; border-top:${10}px #ff28 dashed; opacity:0.7;"><h1 style="margin:0; color: #ff28;">下巴</h1></div>`);
+}
+</script>
+</body></html>
