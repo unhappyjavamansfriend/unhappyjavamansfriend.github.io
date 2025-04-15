@@ -146,7 +146,7 @@ function canvas_draw() {
     // };
 
     var logo = new Image();
-    logo.src = "https://unhappyjavamansfriend.github.io/tools/inch2head/img/images3.jpg"; // 隨機貓咪圖片
+    logo.src = "https://unhappyjavamansfriend.github.io/tools/inch2head/img/images3.png"; // 隨機貓咪圖片
     logo.setAttribute("crossOrigin", 'Anonymous');
     logo.onload = () => {
         if (btn_choose_mode != "usa") {
