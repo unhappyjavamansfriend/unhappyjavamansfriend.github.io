@@ -85,6 +85,7 @@ function canvas_draw() {
     save_img2.src = blobUrl2;
     saveHref2.href = blobUrl2;
     $("#save_href2").attr('download', fileName2);
+    $("#save_href2").after(`<br><p>ibon 4x6相片列印：手機下載OPEN POINT APP，選擇行動列印->圖片列印，按照操作說明，即可ibon取件編號。</p>`);
     $("#save_href2").after(`<p>（點擊圖片即可下載）</p>`);
     $("#save_href2").after(`<p>手機若無法下載時請嘗試改用Chrome瀏覽器開啟</p>`);
     // single image
@@ -145,7 +146,6 @@ function canvas_draw() {
     // };
 
     var logo = new Image();
-    logo.src = "https://s1031432.github.io/yctest/img/logo.png";
     logo.setAttribute("crossOrigin", 'Anonymous');
     logo.onload = () => {
         if (btn_choose_mode != "usa") {
