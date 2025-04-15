@@ -127,7 +127,7 @@ td {
 .yt-card > .photo {
     text-align:center;
     vertical-align: top;
-    max-height:165px;
+    max-height:185px;
 }
 .yt-card > .text {
     padding: 14px 8px;
@@ -137,7 +137,7 @@ td {
     padding: 4px;
     text-align:center;
     color: rgba(225,223,219,1);
-    background-color: rgb(91, 91, 94);
+    background-color: rgb(12, 128, 122);
     min-height:28px;
     display : flex;
     align-items : center;
@@ -163,7 +163,7 @@ td {
         margin-bottom:30px;
         text-align:center;
         vertical-align: top;
-        max-height:165px;
+        max-height:365px;
     }
     .yt-card > .button {
         margin-top:36px;
@@ -191,7 +191,7 @@ td {
         margin-bottom:30px;
         text-align:center;
         vertical-align: top;
-        max-height:165px;
+        max-height:235px;
     }
     .yt-card > .title {
         padding-top: 0px;
@@ -202,7 +202,8 @@ td {
 }
 
 .yt-card > .button:hover {
-    background-color: rgba(124, 123, 123, 0.9);
+    background-color: rgba(34, 196, 174, 0.9);
+    color: #05383b;
     transition: all .15s linear;
 }
 .container {
