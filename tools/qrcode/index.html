@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QR Code 生成器</title>
+  <style>
+    body {
+      font-family: "Indie Flower", serif;
+      background-color: #1E1E1E;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background-color: #2C2C2C;
+      color: #e0e0e0;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: rgba(0, 0, 0, 0.35) 0px -50px 36px -28px inset;
+      /* box-shadow: #1E1E1E 100px 0px 20px 10px inset; */
+
+      text-align: center;
+      width: 400px;
+    }
+    input[type="text"]{
+      width: 90%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+    }
+    .input-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .generateQRCodeBtn {
+      background: #179c9c;
+      border-radius: 5px;
+      cursor: pointer;
+      box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+    .generateQRCodeBtn:hover {
+      background: #64ffdd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+  <h1>QR Code 生成器</h1>
+  <div class="input-container">
+
+  <input type="text" id="text" placeholder="輸入網址或文字">
+  <button class="generateQRCodeBtn" onclick="generateQRCode()">生成 QRCode</button>
+</div>
+  <canvas id="qrcode"></canvas>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script>
+function generateQRCode() {
+  const canvas = document.getElementById('qrcode');
+  const text = document.getElementById('text').value;
+
+  if (!text.trim()) {
+    alert('請輸入內容');
+    return;
+  }
+
+  QRCode.toCanvas(canvas, text, {
+    errorCorrectionLevel: 'H',
+    margin: 2,
+    scale: 6,
+    color: {
+      dark: '#000',
+      light: '#FFF'
+    }
+  }, function (error) {
+    if (error) {
+      console.error('生成失敗:', error);
+    } else {
+      console.log('成功生成 QRCode');
+    }
+  });
+}
+
+
+  </script>
+</body>
+</html>
