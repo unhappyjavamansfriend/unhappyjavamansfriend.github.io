@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>退休年齡計算器</title>
+  <style>
+    h1{text-align: center;}
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: auto;      background-color: #2C2C2C;
+      color: #e0e0e0; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; background-color: #414141;
+      color: #e0e0e0; }
+    .result { margin-top: 20px; padding: 15px; background: #f0f0f0; border-radius: 8px; }
+    canvas { margin-top: 30px; }
+    small { color: #838282; display: block; margin-top: 5px; font-size: 0.9em; }
+    #output{background-color: #414141;
+      color: #e0e0e0; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <h1>退休年齡計算器</h1>
+
+  <label>目前年齡</label>
+  <input type="number" id="currentAge" value="30">
+
+  <label>目前存款（元）</label>
+  <input type="number" id="currentSavings" value="200000">
+
+  <label>每年可儲蓄金額（元）</label>
+  <input type="number" id="annualSaving" value="300000">
+
+  <label>退休後每月花費（元）</label>
+  <input type="number" id="monthlySpending" value="30000">
+
+  <label>退休時間長度（年）</label>
+  <input type="number" id="retirementYears" value="30">
+
+  <label>預期年報酬率（%）</label>
+  <input type="number" id="returnRate" value="5" step="0.1">
+  <small>投資報酬率（例如放在股票、ETF、房地產等投資項目）</small>
+  <small>可以理解成你放到股票、ETF、房地產或其他投資中，這些資產每年為你帶來的回報<br>
+    如果你現在有 100 萬，放在一個年報酬率 5% 的地方<br>
+    第一年：100萬 × (1 + 0.05) = 105萬<br>
+    第二年：105萬 × (1 + 0.05) = 110.25萬<br>
+    ...
+  </small>
+
+  <label>預估年通膨率（%）</label>
+  
+  <input type="number" id="inflationRate" value="2" step="0.1">
+  <small>通膨率（例如每年物價上漲的速度）</small>
+  <small>物價每年上漲的比率，將調整你的退休花費需求</small>
+<small>可以理解成你的錢「變薄」的速度，也就是相同的 100 元，明年能買到的東西會變少
+如果通膨率是 2%，代表東西每年平均漲價 2%
+今年一碗牛肉麵 100 元，明年可能就要 102 元，後年就要 104.04 元
+這會影響你的退休花費，因為你未來需要更多錢，才能維持現在的生活水準</small>
+
+  <div class="result" id="output">請填寫欄位以上數值以查看退休時間。</div>
+
+  <canvas id="retirementChart" height="100"></canvas>
+  <canvas id="growthChart" height="100"></canvas>
+
+  <script>
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => input.addEventListener('input', calculateRetirement));
+
+    const retirementChart = new Chart(document.getElementById('retirementChart').getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: '資產累積（元）',
+            data: [],
+            borderColor: 'green',
+            backgroundColor: 'rgba(0,128,0,0.1)',
+            fill: true,
+          },
+          {
+            label: '退休門檻資產（元）',
+            data: [],
+            borderColor: 'red',
+            backgroundColor: 'rgba(255,0,0,0.05)',
+            fill: true,
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            ticks: {
+              callback: value => value.toLocaleString()
+            }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: context => `${context.dataset.label}: ${Math.round(context.raw).toLocaleString()} 元`
+            }
+          }
+        }
+      }
+    });
+
+    const growthChart = new Chart(document.getElementById('growthChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            label: '投資報酬',
+            backgroundColor: 'rgba(54, 162, 235, 0.7)',
+            data: []
+          },
+          {
+            label: '儲蓄金額',
+            backgroundColor: 'rgba(255, 206, 86, 0.7)',
+            data: []
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: context => `${context.dataset.label}: ${Math.round(context.raw).toLocaleString()} 元`
+            }
+          }
+        },
+        scales: {
+          x: {
+            stacked: true
+          },
+          y: {
+            stacked: true,
+            ticks: {
+              callback: value => value.toLocaleString()
+            }
+          }
+        }
+      }
+    });
+
+    function calculateRetirement() {
+      const age = +document.getElementById('currentAge').value;
+      let savings = +document.getElementById('currentSavings').value;
+      const savingPerYear = +document.getElementById('annualSaving').value;
+      const monthlySpend = +document.getElementById('monthlySpending').value;
+      const yearsOfRetirement = +document.getElementById('retirementYears').value;
+      const returnRate = +document.getElementById('returnRate').value / 100;
+      const inflationRate = +document.getElementById('inflationRate').value / 100;
+
+      let currentAge = age;
+      const maxAge = currentAge+yearsOfRetirement;
+      const annualSpendNow = monthlySpend * 12;
+
+      const labels = [], assetData = [], requiredData = [];
+      const savingsPortion = [], returnsPortion = [];
+
+      let retirementAge = null;
+
+      while (currentAge < maxAge) {
+        const yearsElapsed = currentAge - age;
+        const requiredAssets = annualSpendNow * Math.pow(1 + inflationRate, yearsElapsed) * yearsOfRetirement;
+
+        labels.push(`${currentAge}歲`);
+        assetData.push(savings);
+        requiredData.push(requiredAssets);
+
+        if (!retirementAge && savings >= requiredAssets) {
+          retirementAge = currentAge;
+        }
+
+        const interest = savings * returnRate;
+        savings += interest + savingPerYear;
+
+        savingsPortion.push(savingPerYear);
+        returnsPortion.push(interest);
+
+        currentAge++;
+      }
+
+      if (retirementAge) {
+        const required = requiredData[retirementAge - age];
+        const required_formatted = Math.round(required).toLocaleString();
+        const assets = assetData[retirementAge - age];
+        const assets_formatted = Math.round(assets).toLocaleString();
+        document.getElementById('output').innerHTML =
+          `你可以在 <strong>${retirementAge} 歲</strong> 退休。<br>` +
+          // toFixed 回傳字串，toLocaleString 只能用在數字上
+          `當時你需要約 <strong>${required_formatted} 元</strong><br>` +
+          `屆時你將擁有 <strong>${assets_formatted} 元</strong>，可支應 <strong>${yearsOfRetirement}</strong> 年退休生活。`;
+      } else {
+        document.getElementById('output').innerText = "⚠ 無法在合理年齡內達成退休目標，請增加儲蓄或降低開銷。";
+      }
+
+      retirementChart.data.labels = labels;
+      retirementChart.data.datasets[0].data = assetData;
+      retirementChart.data.datasets[1].data = requiredData;
+      retirementChart.update();
+
+      growthChart.data.labels = labels;
+      growthChart.data.datasets[0].data = returnsPortion;
+      growthChart.data.datasets[1].data = savingsPortion;
+      growthChart.update();
+    }
+
+    calculateRetirement();
+  </script>
+</body>
+</html>
