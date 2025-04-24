@@ -14,8 +14,7 @@
       margin-top: 4px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      height: 100px;
-    font-size: 36px;
+      font-size: 16px;
       box-sizing: border-box;
       background-color: #414141;
       color: #e0e0e0; 
@@ -25,6 +24,12 @@
     small { color: #838282; display: block; margin-top: 5px; font-size: 0.9em; }
     #output{background-color: #414141;
       color: #e0e0e0; }
+      @media (max-width: 768px) {
+        input[type="number"] {
+          height: 100px;
+    font-size: 36px;
+          }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
