@@ -1,0 +1,17 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Properties ↔ YAML Converter</title><script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script><style>body{font-family:"Indie Flower",serif;background-color:#1e1e1e;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;color:#e0e0e0}.container{display:flex;flex-direction:column;gap:20px}.converter-section{display:flex;gap:20px}.converter-panel{flex:1;display:flex;flex-direction:column;gap:10px}textarea{height:300px;resize:vertical;padding:10px;border:1px solid #3d3d3d;border-radius:4px;font-size:16px;color:#e0e0e0;background-color:#1e1e1e;box-shadow:10px 10px 20px #523a3a,-10px -10px 20px #25253a,10px -10px 20px #1c2c1c,-10px 10px 20px #30291d}h1{color:#e0e0e0}button{padding:10px 15px;background-color:#378892;color:#e0e0e0;border:none;border-radius:4px;cursor:pointer;font-size:16px;transition:background-color .8s ease,color .3s ease}button:hover{background-color:#1c6d81;transition:background-color .3s ease,color .3s ease}.button-group{text-align:center;display:flex;gap:10px}.error{color:red;font-weight:700}span{color:#e0e0e0}</style></head><body><div class="container"><div class="converter-section"><div class="converter-panel"><h2>Properties　 <span onclick="copyPropertiesOutput()"><i class="fa-solid fa-clone"></i> </span><span onclick="clearPropertiesInput()"><i class="fa-solid fa-eraser"></i></span></h2><textarea id="propertiesInput" placeholder="Enter Properties format content here...
+Example:
+app.name=MyApp
+app.version=1.0.0
+app.description=A sample application
+database.host=localhost
+database.port=5432
+database.username=admin"></textarea><div id="propertiesToYamlError" class="error"></div><div class="button-group"><button onclick="convertPropertiesToYaml()"><i class="fa-solid fa-arrow-down"></i>　Convert to YAML</button> <button onclick="convertYamlToProperties()"><i class="fa-solid fa-arrow-up"></i>　Convert to Properties</button></div><h2>YAML　 <span onclick="copyYamlOutput()"><i class="fa-solid fa-clone"></i> </span><span onclick="clearYamlInput()"><i class="fa-solid fa-eraser"></i></span></h2><textarea id="yamlInput" placeholder="Enter YAML format content here...
+Example:
+app:
+  name: MyApp
+  version: 1.0.0
+  description: A sample application
+database:
+  host: localhost
+  port: 5432
+  username: admin"></textarea><div id="yamlToPropertiesError" class="error"></div></div></div></div><script src="script.min.js"></script></body></html>
