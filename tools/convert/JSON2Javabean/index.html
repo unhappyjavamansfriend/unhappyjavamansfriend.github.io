@@ -1,5 +1,5 @@
-<!DOCTYPE html><html><head><link rel="icon" href="https://d2luynvj2paf55.cloudfront.net/favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="https://d2luynvj2paf55.cloudfront.net/favicon.ico" type="image/x-icon"><script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script><title>JSON to Java Bean</title><style>body{font-family:"Indie Flower",serif;background-color:#1e1e1e;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;color:#e0e0e0}.container{display:flex;flex-direction:column;gap:20px}.converter-section{display:flex;gap:20px}.converter-panel{flex:1;display:flex;flex-direction:column;gap:10px}textarea{min-width:400px;max-width:400px;word-wrap:break-word;word-break:break-all;white-space:normal;height:300px;resize:vertical;border:1px solid #3d3d3d;border-radius:4px;font-size:16px;color:#e0e0e0;background-color:#1e1e1e;box-shadow:rgba(172,172,228,.1) 0 1px 0,rgba(133,133,233,.1) 0 8px 24px,rgba(44,44,78,.1) 0 16px 48px}#javaOutput1,#javaOutput2{height:150px;white-space:pre-wrap;word-wrap:break-word}h1{color:#e0e0e0}button{padding:10px 15px;background-color:transparent;box-shadow:rgba(172,172,228,.1) 0 1px 0,rgba(64,64,92,.1) 0 8px 24px,rgba(44,44,78,.1) 0 16px 48px;color:#e0e0e0;border-radius:4px;cursor:pointer;font-size:16px;text-align:center;transition:background-color .8s ease,color .3s ease}button:hover{background-color:#3b66df7a;transition:background-color .8s ease,color .3s ease}.button-group{text-align:center;display:flex;gap:10px}.error{color:red;font-weight:700}span{color:#e0e0e0}</style></head><body><div class="container"><div class="converter-section"><div class="converter-panel"><textarea id="jsonInput" placeholder="Paste JSON here...">
-                {
+<!DOCTYPE html><html><head><link rel="icon" href="https://d2luynvj2paf55.cloudfront.net/favicon.ico" type="image/x-icon"><link rel="shortcut icon" href="https://d2luynvj2paf55.cloudfront.net/favicon.ico" type="image/x-icon"><script src="https://cdn.jsdelivr.net/npm/notyf/notyf.min.js"></script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf/notyf.min.css"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"><script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script><title>JSON to Java Bean</title><style>body{font-family:"Indie Flower",serif;background-color:#1e1e1e;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;color:#e0e0e0}.container{display:flex;flex-direction:column;gap:20px}.converter-section{display:flex;gap:20px}.converter-panel{flex:1;display:flex;flex-direction:column;gap:10px}textarea{min-width:400px;max-width:400px;word-wrap:break-word;word-break:break-all;white-space:normal;height:300px;resize:vertical;border:1px solid #3d3d3d;border-radius:4px;font-size:16px;color:#e0e0e0;background-color:#1e1e1e;box-shadow:rgba(172,172,228,.1) 0 1px 0,rgba(133,133,233,.1) 0 8px 24px,rgba(44,44,78,.1) 0 16px 48px}#javaOutput1,#javaOutput2{height:150px;white-space:pre-wrap;word-wrap:break-word}h1{color:#e0e0e0}button{padding:10px 15px;background-color:transparent;box-shadow:rgba(172,172,228,.1) 0 1px 0,rgba(64,64,92,.1) 0 8px 24px,rgba(44,44,78,.1) 0 16px 48px;color:#e0e0e0;border-radius:4px;cursor:pointer;font-size:16px;text-align:center;transition:background-color .8s ease,color .3s ease}button:hover{background-color:#3b66df7a;transition:background-color .8s ease,color .3s ease}.button-group{text-align:center;display:flex;gap:10px}.error{color:red;font-weight:700}span{color:#e0e0e0}</style></head><body><div class="container"><div class="converter-section"><div class="converter-panel"><div><span onclick="copyjsonInput()"><i class="fa-solid fa-clone"></i></span> <span onclick="clearjsonInput()"><i class="fa-solid fa-eraser"></i></span></div><textarea id="jsonInput" placeholder="Paste JSON here...">
+{
   "user": {
     "id": 12345,
     "name": "Mea",
@@ -33,4 +33,41 @@
   }
 }
 
-              </textarea> <button onclick="generate()"><i class="fa-solid fa-arrow-down"></i>　Generate Java Bean</button> <span onclick="copyjavaOutput()"><i class="fa-solid fa-clone"></i></span> <textarea id="javaOutput"></textarea></div></div></div><script src="script.min.js"></script></body></html>
+              </textarea> <button onclick="JSON2JavaBean()"><i class="fa-solid fa-arrow-down"></i>　JSON convert to Java Bean</button> <button onclick="JavaBean2JSON()"><i class="fa-solid fa-arrow-up"></i>Java Bean convert to JSON</button><div><span onclick="copyjavaOutput()"><i class="fa-solid fa-clone"></i></span> <span onclick="clearjavaOutput()"><i class="fa-solid fa-eraser"></i></span></div><textarea id="javaOutput" placeholder="Paste Java Bean here...">
+public class User {
+  private int id;
+  private String name;
+  private String email;
+  private Profile profile;
+  private List&lt;Role&gt; roles;
+  private LocalDateTime createdAt;
+  private Settings settings;
+}
+
+public class Profile {
+  private String bio;
+  private List&lt;String&gt; skills;
+  private Social social;
+}
+
+public class Role {
+  private String name;
+  private List&lt;String&gt; permissions;
+}
+
+public class Settings {
+  private String theme;
+  private Notifications notifications;
+}
+
+public class Social {
+  private String github;
+  private Object twitter;
+}
+
+public class Notifications {
+  private boolean email;
+  private boolean sms;
+}
+
+              </textarea></div></div></div><script src="script.min.js"></script></body></html>
